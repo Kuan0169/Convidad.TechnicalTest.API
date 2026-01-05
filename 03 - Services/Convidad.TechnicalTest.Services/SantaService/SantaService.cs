@@ -8,6 +8,9 @@ namespace Convidad.TechnicalTest.Services.SantaService
     {
         public IEnumerable<Child> GetAllChildren();
         public IEnumerable<Delivery> GetDeliveries();
+        public IEnumerable<Child> GetNaughtyChildren();
+        public IEnumerable<Delivery> GetFailureDeliveries();
+        public IEnumerable<Wish> GetWishes();
     }
 
     public class SantaService(SantaDbContext santaDb) : ISantaService
