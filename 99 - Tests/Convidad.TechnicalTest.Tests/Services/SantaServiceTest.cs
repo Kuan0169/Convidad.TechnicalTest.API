@@ -87,6 +87,23 @@ namespace Convidad.TechnicalTest.Tests.Services
             Assert.All(result, wish => Assert.Equal(childId, wish.ChildId));
             Assert.True(result.Count() > 0);
         }
+
+        [Fact]
+        public void GetWishlistByChildIdOrderedByPriority_ReturnsDescendingOrder()
+        {
+            // Arrange
+            var service = new SantaService(santaDb);
+            var childId = santaDb.Wishes.First().ChildId;
+
+            // Act
+            var result = service.GetWishlistByChildIdOrderedByPriority(childId);
+
+            // Assert
+            Assert.NotNull(result);
+            var priorities = result.Select(w => w.Priority).ToList();
+            var expectedDescending = priorities.OrderByDescending(p => p).ToList();
+            Assert.Equal(expectedDescending, priorities);
+        }
     }
 }
 
