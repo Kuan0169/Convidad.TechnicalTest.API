@@ -52,7 +52,7 @@ namespace Convidad.TechnicalTest.Services.SantaService
             var wishes = new List<Wish>();
             var result = santaDb.Wishes.ToList();
 
-            return wishes;
+            return result;
         }
     }
 }
