@@ -12,6 +12,7 @@ namespace Convidad.TechnicalTest.Services.SantaService
         public IEnumerable<Child> GetNaughtyChildren();
         public IEnumerable<Delivery> GetFailureDeliveries();
         public IEnumerable<Wish> GetWishes();
+        IEnumerable<Wish> GetWishlistByChildId(Guid childId);
         public IEnumerable<Wish> GetWishlistByChildIdOrderedByPriority();
     }
 
@@ -60,6 +61,14 @@ namespace Convidad.TechnicalTest.Services.SantaService
         {
             return santaDb.Wishes
                 .Where(w => w.ChildId == childId)
+                .ToList();
+        }
+
+        public IEnumerable<Wish> GetWishlistByChildIdOrderedByPriority(Guid childId)
+        {
+            return santaDb.Wishes
+                .Where(w => w.ChildId == childId)
+                .OrderByDescending(w => w.Priority)
                 .ToList();
         }
     }
