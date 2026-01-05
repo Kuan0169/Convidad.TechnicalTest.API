@@ -40,5 +40,9 @@ namespace Convidad.TechnicalTest.Data.Entities
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
         public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+        [ForeignKey(nameof(ReindeerId))]
+        public Reindeer? Reindeer { get; set; }
+        public Guid? ReindeerId { get; set; }
     }
 }

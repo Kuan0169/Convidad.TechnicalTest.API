@@ -1,4 +1,4 @@
-﻿using Cinvidad.TechnicalTest.Data.Entities;
+﻿using Convidad.TechnicalTest.Data.Entities;
 using Convidad.TechnicalTest.Data.Context;
 using Microsoft.EntityFrameworkCore;
 

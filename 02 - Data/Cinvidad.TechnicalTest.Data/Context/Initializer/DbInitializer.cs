@@ -1,5 +1,5 @@
-﻿using Cinvidad.TechnicalTest.Data.Entities;
-using Cinvidad.TechnicalTest.Data.Enums;
+﻿using Convidad.TechnicalTest.Data.Entities;
+using Convidad.TechnicalTest.Data.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
