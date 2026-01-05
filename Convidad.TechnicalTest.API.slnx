@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/01 - API/">
+    <Project Path="01 - API/Convidad.TechnicalTest.API/Convidad.TechnicalTest.API.csproj" />
+  </Folder>
+  <Folder Name="/02 - Data/">
+    <Project Path="02 - Data/Cinvidad.TechnicalTest.Data/Convidad.TechnicalTest.Data.csproj" />
+  </Folder>
+  <Folder Name="/03 - Services/">
+    <Project Path="03 - Services/Convidad.TechnicalTest.Services/Convidad.TechnicalTest.Services.csproj" Id="ea8656db-ef05-498f-b9bd-600bbfcc9618" />
+  </Folder>
+  <Folder Name="/99 - Tests/">
+    <Project Path="99 - Tests/Convidad.TechnicalTest.Tests/Convidad.TechnicalTest.Tests.csproj" Id="47a2e9eb-f767-4b64-a9fc-67c386139fe2" />
+  </Folder>
+</Solution>

@@ -1,0 +1,61 @@
+﻿using Convidad.TechnicalTest.Data.Context;
+using Convidad.TechnicalTest.Data.Context.Initializer;
+using Convidad.TechnicalTest.Services.SantaService;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Xunit;
+
+namespace Convidad.TechnicalTest.Tests.Services
+{
+    public class SantaServiceTest
+    {
+        protected readonly SantaDbContext santaDb;
+        public SantaServiceTest()
+        {
+            var connection = new SqliteConnection("DataSource=:memory:");
+            connection.Open();
+
+            var options = new DbContextOptionsBuilder<SantaDbContext>()
+                .UseSqlite(connection)
+                .Options;
+
+            santaDb = new SantaDbContext(options);
+            santaDb.Database.EnsureCreated();
+            using var context = DbInitializer.InitializeDatabase(santaDb);
+        }
+
+
+        [Fact]
+        public void GetAllChildren_ReturnsAllChildren()
+        {
+            // Arrange
+            var service = new SantaService(santaDb);
+
+            // Act
+            var result = service.GetAllChildren();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(5, result.Count());
+        }
+
+        [Fact]
+        public void GetNaughtyChildren_ReturnsNaughtyChildren()
+        {
+            // Arrange
+            var service = new SantaService(santaDb);
+
+            // Act
+            var result = service.GetNaughtyChildren();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(1, result.Count());
+        }
+
+    }
+}
+

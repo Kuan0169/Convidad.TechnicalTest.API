@@ -1,0 +1,11 @@
+@Convidad.TechnicalTest.API_HostAddress = http://localhost:5087
+
+GET {{Convidad.TechnicalTest.API_HostAddress}}/delivery/
+Accept: application/json
+
+###
+
+GET {{Convidad.TechnicalTest.API_HostAddress}}/delivery/children
+Accept: application/json
+
+###
