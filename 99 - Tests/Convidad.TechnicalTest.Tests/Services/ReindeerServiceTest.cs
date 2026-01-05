@@ -85,5 +85,17 @@ namespace Convidad.TechnicalTest.Tests.Services
             Assert.Equal("Prancer", result.Name);
         }
 
+        [Fact]
+        public void GetReindeerById_NonExistingId_ThrowsKeyNotFoundException()
+        {
+            // Arrange
+            using var context = CreateInMemoryDbContext();
+            var service = new SantaService(context);
+            var nonExistingId = Guid.NewGuid();
+
+            // Act & Assert
+            Assert.Throws<KeyNotFoundException>(() => service.GetReindeerById(nonExistingId));
+        }
+
     }
 }
