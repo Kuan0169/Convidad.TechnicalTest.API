@@ -1,4 +1,5 @@
 ﻿using Cinvidad.TechnicalTest.Data.Entities;
+using Cinvidad.TechnicalTest.Data.Enums;
 using Convidad.TechnicalTest.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,7 +42,7 @@ namespace Convidad.TechnicalTest.Services.SantaService
 
         public IEnumerable<Delivery> GetFailureDeliveries()
         {
-            var deliveries = santaDb.Deliveries.ToList();
+            var deliveries = santaDb.Deliveries.ToList().Where(d => d.Status == DeliveryStatus.Failed);
 
             return deliveries;
         }

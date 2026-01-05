@@ -69,10 +69,7 @@ namespace Convidad.TechnicalTest.Tests.Services
             // Assert
             Assert.NotNull(result);
             Assert.All(result, d => Assert.Equal(DeliveryStatus.Failed, d.Status));
-
-            // 根據 DbInitializer 中的種子資料調整數量
-            // 假設有 2 筆 failed deliveries（請確認實際數量）
-            Assert.Equal(2, result.Count());
+            Assert.Equal(1, result.Count());
         }
 
     }
