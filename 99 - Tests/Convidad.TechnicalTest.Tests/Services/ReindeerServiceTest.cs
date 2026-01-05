@@ -68,5 +68,22 @@ namespace Convidad.TechnicalTest.Tests.Services
             Assert.Equal(2, result.Count());
         }
 
+        [Fact]
+        public void GetReindeerById_ExistingId_ReturnsReindeer()
+        {
+            // Arrange
+            using var context = CreateInMemoryDbContext();
+            var service = new SantaService(context);
+            var reindeer = new Reindeer { Name = "Prancer", PlateNumber = "XMAS-004", Weight = 105, Packets = 40 };
+            context.Reindeers.Add(reindeer);
+            context.SaveChanges();
+
+            // Act
+            var result = service.GetReindeerById(reindeer.Id);
+
+            // Assert
+            Assert.Equal("Prancer", result.Name);
+        }
+
     }
 }
