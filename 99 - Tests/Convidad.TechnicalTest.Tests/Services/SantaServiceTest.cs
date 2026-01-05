@@ -1,4 +1,5 @@
-﻿using Convidad.TechnicalTest.Data.Context;
+﻿using Cinvidad.TechnicalTest.Data.Enums;
+using Convidad.TechnicalTest.Data.Context;
 using Convidad.TechnicalTest.Data.Context.Initializer;
 using Convidad.TechnicalTest.Services.SantaService;
 using Microsoft.Data.Sqlite;
@@ -54,6 +55,24 @@ namespace Convidad.TechnicalTest.Tests.Services
             // Assert
             Assert.NotNull(result);
             Assert.Equal(1, result.Count());
+        }
+
+        [Fact]
+        public void GetFailureDeliveries_ReturnsOnlyFailedDeliveries()
+        {
+            // Arrange
+            var service = new SantaService(santaDb);
+
+            // Act
+            var result = service.GetFailureDeliveries();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.All(result, d => Assert.Equal(DeliveryStatus.Failed, d.Status));
+
+            // 根據 DbInitializer 中的種子資料調整數量
+            // 假設有 2 筆 failed deliveries（請確認實際數量）
+            Assert.Equal(2, result.Count());
         }
 
     }
