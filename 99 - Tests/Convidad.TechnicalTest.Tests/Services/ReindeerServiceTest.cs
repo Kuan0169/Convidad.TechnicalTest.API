@@ -48,5 +48,25 @@ namespace Convidad.TechnicalTest.Tests.Services
             Assert.Equal(50, saved.Packets);
         }
 
+        [Fact]
+        public void GetAllReindeers_ReturnsAllReindeers()
+        {
+            // Arrange
+            using var context = CreateInMemoryDbContext();
+            var service = new SantaService(context);
+
+            context.Reindeers.AddRange(
+                new Reindeer { Name = "Dasher", PlateNumber = "XMAS-002", Weight = 110, Packets = 45 },
+                new Reindeer { Name = "Dancer", PlateNumber = "XMAS-003", Weight = 115, Packets = 48 }
+            );
+            context.SaveChanges();
+
+            // Act
+            var result = service.GetAllReindeers();
+
+            // Assert
+            Assert.Equal(2, result.Count());
+        }
+
     }
 }
