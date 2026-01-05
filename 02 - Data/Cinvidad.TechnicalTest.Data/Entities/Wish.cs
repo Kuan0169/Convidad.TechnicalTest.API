@@ -1,11 +1,11 @@
-﻿using Cinvidad.TechnicalTest.Data.Enums;
+﻿using Convidad.TechnicalTest.Data.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
-namespace Cinvidad.TechnicalTest.Data.Entities
+namespace Convidad.TechnicalTest.Data.Entities
 {
     public class Wish
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Cinvidad.TechnicalTest.Data.Enums
+namespace Convidad.TechnicalTest.Data.Enums
 {
     public enum DeliveryStatus
     {

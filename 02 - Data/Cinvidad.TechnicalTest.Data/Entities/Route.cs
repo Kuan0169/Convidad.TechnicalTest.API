@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Cinvidad.TechnicalTest.Data.Entities
+namespace Convidad.TechnicalTest.Data.Entities
 {
     public class Route
     {
