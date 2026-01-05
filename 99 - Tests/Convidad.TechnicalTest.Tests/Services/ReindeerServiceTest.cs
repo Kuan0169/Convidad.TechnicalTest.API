@@ -97,5 +97,32 @@ namespace Convidad.TechnicalTest.Tests.Services
             Assert.Throws<KeyNotFoundException>(() => service.GetReindeerById(nonExistingId));
         }
 
+        [Fact]
+        public void AssignReindeerToDelivery_ValidIds_UpdatesDelivery()
+        {
+            // Arrange
+            using var context = CreateInMemoryDbContext();
+            var service = new SantaService(context);
+
+            // 建立必要資料
+            var child = new Child { Name = "Test Child", CountryCode = "US" };
+            var route = new Route { Name = "North Pole Route" };
+            var delivery = new Delivery { ChildId = child.Id, RouteId = route.Id };
+            var reindeer = new Reindeer { Name = "Vixen", PlateNumber = "XMAS-005", Weight = 108, Packets = 42 };
+
+            context.Children.Add(child);
+            context.Routes.Add(route);
+            context.Deliveries.Add(delivery);
+            context.Reindeers.Add(reindeer);
+            context.SaveChanges();
+
+            // Act
+            service.AssignReindeerToDelivery(delivery.Id, reindeer.Id);
+            var updatedDelivery = context.Deliveries.Find(delivery.Id);
+
+            // Assert
+            Assert.Equal(reindeer.Id, updatedDelivery.ReindeerId);
+        }
+
     }
 }
