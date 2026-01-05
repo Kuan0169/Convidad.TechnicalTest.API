@@ -72,6 +72,21 @@ namespace Convidad.TechnicalTest.Tests.Services
             Assert.Equal(1, result.Count());
         }
 
+        [Fact]
+        public void GetWishlistByChildId_ReturnsCorrectWishes()
+        {
+            // Arrange
+            var service = new SantaService(santaDb);
+            var childId = santaDb.Children.First(c => c.Name == "lucia").Id;
+
+            // Act
+            var result = service.GetWishlistByChildId(childId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.All(result, wish => Assert.Equal(childId, wish.ChildId));
+            Assert.True(result.Count() > 0);
+        }
     }
 }
 
