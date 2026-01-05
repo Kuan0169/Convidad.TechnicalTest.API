@@ -12,8 +12,8 @@ namespace Convidad.TechnicalTest.Services.SantaService
         public IEnumerable<Child> GetNaughtyChildren();
         public IEnumerable<Delivery> GetFailureDeliveries();
         public IEnumerable<Wish> GetWishes();
-        IEnumerable<Wish> GetWishlistByChildId(Guid childId);
-        public IEnumerable<Wish> GetWishlistByChildIdOrderedByPriority();
+        public IEnumerable<Wish> GetWishlistByChildId(Guid childId);
+        public IEnumerable<Wish> GetWishlistByChildIdOrderedByPriority(Guid childId);
     }
 
     public class SantaService(SantaDbContext santaDb) : ISantaService

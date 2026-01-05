@@ -77,7 +77,7 @@ namespace Convidad.TechnicalTest.Tests.Services
         {
             // Arrange
             var service = new SantaService(santaDb);
-            var childId = santaDb.Children.First(c => c.Name == "lucia").Id;
+            var childId = santaDb.Children.First(c => c.Name == "Sophia").Id;
 
             // Act
             var result = service.GetWishlistByChildId(childId);
