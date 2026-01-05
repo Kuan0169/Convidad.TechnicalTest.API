@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace Cinvidad.TechnicalTest.Data.Entities
+namespace Convidad.TechnicalTest.Data.Entities
 {
     public class Child
     {
