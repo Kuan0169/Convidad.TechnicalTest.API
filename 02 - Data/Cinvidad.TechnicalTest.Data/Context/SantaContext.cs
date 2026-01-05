@@ -15,6 +15,7 @@ namespace Convidad.TechnicalTest.Data.Context
         public DbSet<Wish> Wishes => Set<Wish>();
         public DbSet<Route> Routes => Set<Route>();
         public DbSet<Delivery> Deliveries => Set<Delivery>();
+        public DbSet<Reindeer> Reindeers => Set<Reindeer>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,6 +33,9 @@ namespace Convidad.TechnicalTest.Data.Context
             modelBuilder.Entity<Delivery>()
                 .HasOne(d => d.Route);
 
+            //Delivery -> Reindeer (N:1)
+            modelBuilder.Entity<Delivery>()
+                .HasOne(d => d.Reindeer);
 
             modelBuilder.Entity<Delivery>()
                 .HasIndex(d => new { d.ChildId, d.ScheduledFor })
