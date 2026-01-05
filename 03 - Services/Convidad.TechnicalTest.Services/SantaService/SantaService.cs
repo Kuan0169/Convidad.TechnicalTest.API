@@ -1,4 +1,5 @@
 ﻿using Cinvidad.TechnicalTest.Data.Entities;
+using Cinvidad.TechnicalTest.Data.Enums;
 using Convidad.TechnicalTest.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,11 @@ namespace Convidad.TechnicalTest.Services.SantaService
     {
         public IEnumerable<Child> GetAllChildren();
         public IEnumerable<Delivery> GetDeliveries();
+        public IEnumerable<Child> GetNaughtyChildren();
+        public IEnumerable<Delivery> GetFailureDeliveries();
+        public IEnumerable<Wish> GetWishes();
+        public IEnumerable<Wish> GetWishlistByChildId(Guid childId);
+        public IEnumerable<Wish> GetWishlistByChildIdOrderedByPriority(Guid childId);
     }
 
     public class SantaService(SantaDbContext santaDb) : ISantaService
@@ -38,7 +44,7 @@ namespace Convidad.TechnicalTest.Services.SantaService
 
         public IEnumerable<Delivery> GetFailureDeliveries()
         {
-            var deliveries = santaDb.Deliveries.ToList();
+            var deliveries = santaDb.Deliveries.ToList().Where(d => d.Status == DeliveryStatus.Failed);
 
             return deliveries;
         }
@@ -48,7 +54,22 @@ namespace Convidad.TechnicalTest.Services.SantaService
             var wishes = new List<Wish>();
             var result = santaDb.Wishes.ToList();
 
-            return wishes;
+            return result;
+        }
+
+        public IEnumerable<Wish> GetWishlistByChildId(Guid childId)
+        {
+            return santaDb.Wishes
+                .Where(w => w.ChildId == childId)
+                .ToList();
+        }
+
+        public IEnumerable<Wish> GetWishlistByChildIdOrderedByPriority(Guid childId)
+        {
+            return santaDb.Wishes
+                .Where(w => w.ChildId == childId)
+                .OrderByDescending(w => w.Priority)
+                .ToList();
         }
     }
 }
