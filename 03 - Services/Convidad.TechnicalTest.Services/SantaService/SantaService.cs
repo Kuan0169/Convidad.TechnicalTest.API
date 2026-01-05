@@ -31,8 +31,9 @@ namespace Convidad.TechnicalTest.Services.SantaService
         public IEnumerable<Child> GetNaughtyChildren()
         {
             var children = santaDb.Children.ToList();
+            var naughtyChildren = children.Where(c => !c.IsNice);
 
-            return children;
+            return naughtyChildren;
         }
 
         public IEnumerable<Delivery> GetFailureDeliveries()
