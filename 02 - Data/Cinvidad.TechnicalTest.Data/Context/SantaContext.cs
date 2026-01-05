@@ -15,7 +15,7 @@ namespace Convidad.TechnicalTest.Data.Context
         public DbSet<Wish> Wishes => Set<Wish>();
         public DbSet<Route> Routes => Set<Route>();
         public DbSet<Delivery> Deliveries => Set<Delivery>();
-        public DbSet<Reindeer> Santas => Set<Reindeer>();
+        public DbSet<Reindeer> Reindeers => Set<Reindeer>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
