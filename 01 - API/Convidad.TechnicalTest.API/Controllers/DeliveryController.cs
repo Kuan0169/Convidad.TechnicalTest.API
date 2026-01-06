@@ -50,5 +50,33 @@ namespace Convidad.TechnicalTest.API.Controllers
             var wishesProirity =santaService.GetWishlistByChildIdOrderedByPriority(childId);
             return wishesProirity;
         }
+
+        [HttpGet("reindeers")]
+        public IEnumerable<Reindeer> GetAllReindeers()
+        {
+            var reindeers = santaService.GetAllReindeers();
+            return reindeers;
+        }
+
+        [HttpGet("reindeers/{id}")]
+        public Reindeer GetReindeerById(Guid id)
+        {
+            var reindeer = santaService.GetReindeerById(id);
+            return reindeer;
+        }
+
+        [HttpPost("reindeers")]
+        public ActionResult AddReindeer([FromBody] Reindeer reindeer)
+        {
+            santaService.AddReindeer(reindeer);
+            return CreatedAtAction(nameof(GetReindeerById), new { id = reindeer.Id }, reindeer);
+        }
+
+        [HttpPost("deliveries/{deliveryId}/assign-reindeer/{reindeerId}")]
+        public ActionResult AssignReindeerToDelivery(Guid deliveryId, Guid reindeerId)
+        {
+            santaService.AssignReindeerToDelivery(deliveryId, reindeerId);
+            return NoContent();
+        }
     }
 }

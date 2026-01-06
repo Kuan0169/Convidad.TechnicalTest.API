@@ -23,7 +23,6 @@ namespace Convidad.TechnicalTest.Tests.Services
                 .Options;
             _dbContext = new SantaDbContext(options);
             _dbContext.Database.EnsureCreated();
-            // 注意：這裡先不跑 DbInitializer，我們自己加 Reindeer 測試資料
         }
 
         [Fact]
@@ -93,5 +92,7 @@ namespace Convidad.TechnicalTest.Tests.Services
             // Assert
             Assert.Equal(reindeer.Id, updatedDelivery.ReindeerId);
         }
+
+
     }
 }
