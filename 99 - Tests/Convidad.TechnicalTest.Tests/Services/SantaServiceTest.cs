@@ -1,4 +1,4 @@
-﻿using Cinvidad.TechnicalTest.Data.Enums;
+﻿using Convidad.TechnicalTest.Data.Enums;
 using Convidad.TechnicalTest.Data.Context;
 using Convidad.TechnicalTest.Data.Context.Initializer;
 using Convidad.TechnicalTest.Services.SantaService;

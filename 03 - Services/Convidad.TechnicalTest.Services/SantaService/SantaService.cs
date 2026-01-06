@@ -14,6 +14,10 @@ namespace Convidad.TechnicalTest.Services.SantaService
         public IEnumerable<Wish> GetWishes();
         public IEnumerable<Wish> GetWishlistByChildId(Guid childId);
         public IEnumerable<Wish> GetWishlistByChildIdOrderedByPriority(Guid childId);
+        public IEnumerable<Reindeer> GetAllReindeers();
+        public Reindeer GetReindeerById(Guid id);
+        public void AddReindeer(Reindeer reindeer);
+        public void AssignReindeerToDelivery(Guid deliveryId, Guid reindeerId);
     }
 
     public class SantaService(SantaDbContext santaDb) : ISantaService
@@ -70,6 +74,37 @@ namespace Convidad.TechnicalTest.Services.SantaService
                 .Where(w => w.ChildId == childId)
                 .OrderByDescending(w => w.Priority)
                 .ToList();
+        }
+
+        public IEnumerable<Reindeer> GetAllReindeers()
+        {
+            return santaDb.Reindeers.ToList();
+        }
+
+        public Reindeer GetReindeerById(Guid id)
+        {
+            return santaDb.Reindeers.Find(id)
+                   ?? throw new KeyNotFoundException($"Reindeer with ID {id} not found.");
+        }
+
+        public void AddReindeer(Reindeer reindeer)
+        {
+            santaDb.Reindeers.Add(reindeer);
+            santaDb.SaveChanges();
+        }
+
+        public void AssignReindeerToDelivery(Guid deliveryId, Guid reindeerId)
+        {
+            var delivery = santaDb.Deliveries.Find(deliveryId);
+            if (delivery == null)
+                throw new KeyNotFoundException($"Delivery with ID {deliveryId} not found.");
+
+            var reindeer = santaDb.Reindeers.Find(reindeerId);
+            if (reindeer == null)
+                throw new KeyNotFoundException($"Reindeer with ID {reindeerId} not found.");
+
+            delivery.ReindeerId = reindeerId;
+            santaDb.SaveChanges();
         }
     }
 }
