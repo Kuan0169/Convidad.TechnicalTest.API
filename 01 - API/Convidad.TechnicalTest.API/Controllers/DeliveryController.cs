@@ -1,3 +1,5 @@
+using Convidad.TechnicalTest.Data.DTOs;
+using Convidad.TechnicalTest.Data.DTOs.Requests;
 using Convidad.TechnicalTest.Data.Entities;
 using Convidad.TechnicalTest.Services.SantaService;
 using Microsoft.AspNetCore.Mvc;
@@ -10,73 +12,130 @@ namespace Convidad.TechnicalTest.API.Controllers
     {
         private readonly ISantaService santaService = santaService;
 
-        public IEnumerable<Delivery> Get()
-        {
-            var deliveries = santaService.GetDeliveries();
-            return deliveries;
-        }
+        // ===== Part 1: Children & Wishlist =====
 
         [HttpGet("children")]
-        public IEnumerable<Child> GetAllChildren()
+        public ActionResult<IEnumerable<ChildDto>> GetAllChildren()
         {
             var children = santaService.GetAllChildren();
-            return children;
+            var dtos = children.Select(c => new ChildDto(c.Id, c.Name, c.CountryCode, c.IsNice));
+            return Ok(dtos);
         }
 
         [HttpGet("children/naughty")]
-        public IEnumerable<Child> GetNaughtyChildren()
+        public ActionResult<IEnumerable<ChildDto>> GetNaughtyChildren()
         {
-            var naughtyChildren = santaService.GetNaughtyChildren();
-            return naughtyChildren;
+            var children = santaService.GetNaughtyChildren();
+            var dtos = children.Select(c => new ChildDto(c.Id, c.Name, c.CountryCode, c.IsNice));
+            return Ok(dtos);
         }
 
-        [HttpGet("deliveries/failures")]
-        public IEnumerable<Delivery> GetFailureDeliveries()
-        {
-            var failureDeliveries = santaService.GetFailureDeliveries();
-            return failureDeliveries;
-        }
-
-        [HttpGet("children/{childId}/wishlist")] 
-        public IEnumerable<Wish> GetWishlistByChildId(Guid childId)
+        [HttpGet("children/{childId}/wishlist")]
+        public ActionResult<IEnumerable<WishDto>> GetWishlistByChildId(Guid childId)
         {
             var wishes = santaService.GetWishlistByChildId(childId);
-            return wishes;
+            var dtos = wishes.Select(w => new WishDto(w.Id, w.Category.ToString(), w.Priority));
+            return Ok(dtos);
         }
 
         [HttpGet("children/{childId}/wishlist/priority")]
-        public IEnumerable<Wish> GetWishlistByChildIdOrderedByPriority(Guid childId)
+        public ActionResult<IEnumerable<WishDto>> GetWishlistByChildIdOrderedByPriority(Guid childId)
         {
-            var wishesProirity =santaService.GetWishlistByChildIdOrderedByPriority(childId);
-            return wishesProirity;
+            var wishes = santaService.GetWishlistByChildIdOrderedByPriority(childId);
+            var dtos = wishes.Select(w => new WishDto(w.Id, w.Category.ToString(), w.Priority));
+            return Ok(dtos);
         }
 
+        // ===== Part 1: Deliveries =====
+
+        public ActionResult<IEnumerable<Delivery>> GetDeliveries()
+        {
+            var deliveries = santaService.GetDeliveries();
+            return Ok(deliveries);
+        }
+
+
+        [HttpGet("deliveries/failures")]
+        public ActionResult<IEnumerable<Delivery>> GetFailureDeliveries()
+        {
+            var failureDeliveries = santaService.GetFailureDeliveries();
+            return Ok(failureDeliveries);
+        }
+
+        // ===== Part 2: Reindeers =====
+
         [HttpGet("reindeers")]
-        public IEnumerable<Reindeer> GetAllReindeers()
+        public ActionResult<IEnumerable<ReindeerDto>> GetAllReindeers()
         {
             var reindeers = santaService.GetAllReindeers();
-            return reindeers;
+            var dtos = reindeers.Select(r => new ReindeerDto(
+                r.Id, r.Name, r.PlateNumber, r.Weight, r.Packets));
+            return Ok(dtos);
         }
 
         [HttpGet("reindeers/{id}")]
-        public Reindeer GetReindeerById(Guid id)
+        public ActionResult<ReindeerDto> GetReindeerById(Guid id)
         {
-            var reindeer = santaService.GetReindeerById(id);
-            return reindeer;
+            try
+            {
+                var reindeer = santaService.GetReindeerById(id);
+                var dto = new ReindeerDto(
+                    reindeer.Id, reindeer.Name, reindeer.PlateNumber,
+                    reindeer.Weight, reindeer.Packets);
+                return Ok(dto);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound($"Reindeer with ID {id} not found.");
+            }
         }
 
         [HttpPost("reindeers")]
-        public ActionResult AddReindeer([FromBody] Reindeer reindeer)
+        public ActionResult<ReindeerDto> AddReindeer([FromBody] ReindeerDto reindeerDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var reindeer = new Reindeer
+            {
+                Name = reindeerDto.Name,
+                PlateNumber = reindeerDto.PlateNumber,
+                Weight = reindeerDto.Weight,
+                Packets = reindeerDto.Packets
+            };
+
             santaService.AddReindeer(reindeer);
-            return CreatedAtAction(nameof(GetReindeerById), new { id = reindeer.Id }, reindeer);
+
+            var createdDto = new ReindeerDto
+            (
+                reindeer.Id, reindeer.Name, reindeer.PlateNumber,
+                reindeer.Weight, reindeer.Packets
+            );
+
+            return CreatedAtAction(nameof(GetReindeerById), new { id = reindeer.Id }, reindeerDto);
         }
 
-        [HttpPost("deliveries/{deliveryId}/assign-reindeer/{reindeerId}")]
-        public ActionResult AssignReindeerToDelivery(Guid deliveryId, Guid reindeerId)
+        // ===== Part 2: Assign Reindeer (RESTful with DTO) =====
+
+        [HttpPost("deliveries/{deliveryId}/assign-reindeer")]
+        public ActionResult AssignReindeerToDelivery
+            (
+                Guid deliveryId,
+                [FromBody] AssignReindeerRequest request
+            )
         {
-            santaService.AssignReindeerToDelivery(deliveryId, reindeerId);
-            return NoContent();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                santaService.AssignReindeerToDelivery(deliveryId, request.ReindeerId);
+                return NoContent();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }
