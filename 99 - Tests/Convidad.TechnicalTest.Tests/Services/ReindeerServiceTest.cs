@@ -5,7 +5,9 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
+using System.Text.Json;
 using Xunit;
 
 namespace Convidad.TechnicalTest.Tests.Services
@@ -92,7 +94,5 @@ namespace Convidad.TechnicalTest.Tests.Services
             // Assert
             Assert.Equal(reindeer.Id, updatedDelivery.ReindeerId);
         }
-
-
     }
 }
