@@ -15,6 +15,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+	  <ProjectReference Include="..\..\01 - API\Convidad.TechnicalTest.API\Convidad.TechnicalTest.API.csproj" />
 	  <ProjectReference Include="..\..\02 - Data\Cinvidad.TechnicalTest.Data\Convidad.TechnicalTest.Data.csproj" />
 	  <ProjectReference Include="..\..\03 - Services\Convidad.TechnicalTest.Services\Convidad.TechnicalTest.Services.csproj" />
 	</ItemGroup>
