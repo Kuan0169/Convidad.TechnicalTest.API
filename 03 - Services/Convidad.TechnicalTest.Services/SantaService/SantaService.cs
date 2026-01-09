@@ -26,9 +26,7 @@ namespace Convidad.TechnicalTest.Services.SantaService
         
         public IEnumerable<Child> GetAllChildren()
         {
-           var children = santaDb.Children.ToList(); 
-
-            return children;
+            return santaDb.Children.ToList();
         }
 
         public IEnumerable<Delivery> GetDeliveries()
@@ -43,9 +41,9 @@ namespace Convidad.TechnicalTest.Services.SantaService
 
         public IEnumerable<Delivery> GetFailureDeliveries()
         {
-            var deliveries = santaDb.Deliveries.ToList().Where(d => d.Status == DeliveryStatus.Failed);
-
-            return deliveries;
+            return santaDb.Deliveries
+                .Where(d => d.Status == DeliveryStatus.Failed)
+                .ToList(); ;
         }
 
         public IEnumerable<Wish> GetWishes()
