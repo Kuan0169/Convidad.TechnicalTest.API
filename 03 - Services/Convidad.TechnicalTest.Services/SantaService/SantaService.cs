@@ -33,17 +33,12 @@ namespace Convidad.TechnicalTest.Services.SantaService
 
         public IEnumerable<Delivery> GetDeliveries()
         {
-           var deliveries = santaDb.Deliveries.Include(c => c.Child).Include(c => c.Route).ToList(); 
-
-            return deliveries;
+            return santaDb.Deliveries.Where(d => d.Status == DeliveryStatus.Failed).ToList();
         }
 
         public IEnumerable<Child> GetNaughtyChildren()
         {
-            var children = santaDb.Children.ToList();
-            var naughtyChildren = children.Where(c => !c.IsNice);
-
-            return naughtyChildren;
+            return santaDb.Children.Where(c => !c.IsNice).ToList();
         }
 
         public IEnumerable<Delivery> GetFailureDeliveries()
@@ -60,7 +55,6 @@ namespace Convidad.TechnicalTest.Services.SantaService
 
             return result;
         }
-
         public IEnumerable<Wish> GetWishlistByChildId(Guid childId)
         {
             return santaDb.Wishes

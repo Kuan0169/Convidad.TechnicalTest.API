@@ -1,7 +1,5 @@
 ﻿using Convidad.TechnicalTest.API.Controllers;
-using Convidad.TechnicalTest.Data.DTOs;
 using Convidad.TechnicalTest.Data.DTOs.Requests;
-using Convidad.TechnicalTest.Data.Entities;
 using Convidad.TechnicalTest.Services.SantaService;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -38,7 +36,6 @@ public class DeliveryControllerTest
         var mockService = new Mock<ISantaService>();
         var controller = new DeliveryController(mockService.Object);
 
-        // 手動標記 ModelState 為無效（模擬 [Required] 驗證失敗）
         controller.ModelState.AddModelError("ReindeerId", "Required");
 
         var deliveryId = Guid.NewGuid();

@@ -3,11 +3,6 @@ using Convidad.TechnicalTest.Data.Entities;
 using Convidad.TechnicalTest.Services.SantaService;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
-using System.Text.Json;
 using Xunit;
 
 namespace Convidad.TechnicalTest.Tests.Services

@@ -12,8 +12,6 @@ namespace Convidad.TechnicalTest.API.Controllers
     {
         private readonly ISantaService santaService = santaService;
 
-        // ===== Part 1: Children & Wishlist =====
-
         [HttpGet("children")]
         public ActionResult<IEnumerable<ChildDto>> GetAllChildren()
         {
@@ -46,14 +44,12 @@ namespace Convidad.TechnicalTest.API.Controllers
             return Ok(dtos);
         }
 
-        // ===== Part 1: Deliveries =====
-
+        [HttpGet("deliveries")]
         public ActionResult<IEnumerable<Delivery>> GetDeliveries()
         {
             var deliveries = santaService.GetDeliveries();
             return Ok(deliveries);
         }
-
 
         [HttpGet("deliveries/failures")]
         public ActionResult<IEnumerable<Delivery>> GetFailureDeliveries()
@@ -61,8 +57,6 @@ namespace Convidad.TechnicalTest.API.Controllers
             var failureDeliveries = santaService.GetFailureDeliveries();
             return Ok(failureDeliveries);
         }
-
-        // ===== Part 2: Reindeers =====
 
         [HttpGet("reindeers")]
         public ActionResult<IEnumerable<ReindeerDto>> GetAllReindeers()
@@ -112,10 +106,8 @@ namespace Convidad.TechnicalTest.API.Controllers
                 reindeer.Weight, reindeer.Packets
             );
 
-            return CreatedAtAction(nameof(GetReindeerById), new { id = reindeer.Id }, reindeerDto);
+            return CreatedAtAction(nameof(GetReindeerById), new { id = reindeer.Id }, createdDto);
         }
-
-        // ===== Part 2: Assign Reindeer (RESTful with DTO) =====
 
         [HttpPost("deliveries/{deliveryId}/assign-reindeer")]
         public ActionResult AssignReindeerToDelivery
@@ -126,7 +118,6 @@ namespace Convidad.TechnicalTest.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
             try
             {
                 santaService.AssignReindeerToDelivery(deliveryId, request.ReindeerId);

@@ -4,9 +4,6 @@ using Convidad.TechnicalTest.Data.Context.Initializer;
 using Convidad.TechnicalTest.Services.SantaService;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Convidad.TechnicalTest.Tests.Services
