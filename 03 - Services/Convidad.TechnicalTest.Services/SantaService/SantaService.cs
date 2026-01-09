@@ -33,7 +33,7 @@ namespace Convidad.TechnicalTest.Services.SantaService
 
         public IEnumerable<Delivery> GetDeliveries()
         {
-            return santaDb.Deliveries.Where(d => d.Status == DeliveryStatus.Failed).ToList();
+            return santaDb.Deliveries.ToList();
         }
 
         public IEnumerable<Child> GetNaughtyChildren()
