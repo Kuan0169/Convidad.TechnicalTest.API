@@ -16,7 +16,6 @@ public class DeliveryControllerTest
         // Arrange
         var mockService = new Mock<ISantaService>();
         var controller = new DeliveryController(mockService.Object);
-
         var deliveryId = Guid.NewGuid();
         var reindeerId = Guid.NewGuid();
         var request = new AssignReindeerRequest { ReindeerId = reindeerId };
@@ -39,7 +38,7 @@ public class DeliveryControllerTest
         controller.ModelState.AddModelError("ReindeerId", "Required");
 
         var deliveryId = Guid.NewGuid();
-        var request = new AssignReindeerRequest { ReindeerId = Guid.Empty }; // 或 null
+        var request = new AssignReindeerRequest { ReindeerId = Guid.Empty };
 
         // Act
         var result = controller.AssignReindeerToDelivery(deliveryId, request);
@@ -57,7 +56,6 @@ public class DeliveryControllerTest
         mockService
             .Setup(s => s.GetReindeerById(It.IsAny<Guid>()))
             .Throws(new KeyNotFoundException("Not found"));
-
         var controller = new DeliveryController(mockService.Object);
         var id = Guid.NewGuid();
 
