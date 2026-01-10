@@ -1,4 +1,4 @@
-using Convidad.TechnicalTest.Data.DTOs;
+using Convidad.TechnicalTest.API.DTOs;
 using Convidad.TechnicalTest.Data.DTOs.Requests;
 using Convidad.TechnicalTest.Data.Entities;
 using Convidad.TechnicalTest.Services.SantaService;
