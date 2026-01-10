@@ -101,6 +101,34 @@ namespace Convidad.TechnicalTest.Tests.Services
             var expectedDescending = priorities.OrderByDescending(p => p).ToList();
             Assert.Equal(expectedDescending, priorities);
         }
+
+        [Fact]
+        public void GetWishlistByChildId_NonExistingChild_ReturnsEmpty()
+        {
+            // Arrange
+            var service = new SantaService(santaDb);
+            var nonExistingChildId = Guid.NewGuid();
+
+            // Act
+            var result = service.GetWishlistByChildId(nonExistingChildId);
+
+            // Assert
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void GetWishlistByChildIdOrderedByPriority_NonExistingChild_ReturnsEmpty()
+        {
+            // Arrange
+            var service = new SantaService(santaDb);
+            var nonExistingChildId = Guid.NewGuid();
+
+            // Act
+            var result = service.GetWishlistByChildIdOrderedByPriority(nonExistingChildId);
+
+            // Assert
+            Assert.Empty(result);
+        }
     }
 }
 
