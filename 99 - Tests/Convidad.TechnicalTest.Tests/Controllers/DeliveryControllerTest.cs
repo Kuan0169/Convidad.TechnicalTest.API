@@ -10,9 +10,6 @@ namespace Convidad.TechnicalTest.Tests.Controllers;
 
 public class DeliveryControllerTest
 {
-
-
-
     [Fact]
     public void AssignReindeerToDelivery_ValidRequest_ReturnsNoContent()
     {
@@ -56,11 +53,14 @@ public class DeliveryControllerTest
     {
         // Arrange
         var mockService = new Mock<ISantaService>();
+        var id = Guid.NewGuid(); // 👈 先建立具體 ID
+
+        // 👈 使用具體 ID 設定 mock
         mockService
-            .Setup(s => s.GetReindeerById(It.IsAny<Guid>()))
-            .Throws(new KeyNotFoundException("Not found"));
+            .Setup(s => s.GetReindeerById(id))
+            .Throws(new KeyNotFoundException($"Reindeer with ID {id} not found."));
+
         var controller = new DeliveryController(mockService.Object);
-        var id = Guid.NewGuid();
 
         // Act
         var result = controller.GetReindeerById(id);
@@ -70,7 +70,7 @@ public class DeliveryControllerTest
         var actualMessage = notFoundResult.Value?.ToString();
 
         Assert.NotNull(actualMessage);
-        Assert.Contains(id.ToString(), actualMessage);
+        Assert.Contains(id.ToString(), actualMessage); // 👈 現在會匹配
         Assert.Contains("Reindeer", actualMessage);
         Assert.Contains("not found", actualMessage);
     }

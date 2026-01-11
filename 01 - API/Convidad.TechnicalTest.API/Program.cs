@@ -30,6 +30,13 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<SantaDbContext>();
+    await db.Database.EnsureCreatedAsync();
+    await DbInitializer.InitializeDatabase(db);
+}
+
 app.Use(async (context, next) =>
 {
     context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
@@ -38,25 +45,15 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseMiddleware<GlobalExceptionHandler>();
-
-app.UseMiddleware<RequestTiming>();
-
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<SantaDbContext>();
-
-    await db.Database.EnsureCreatedAsync();
-    await DbInitializer.InitializeDatabase(db);
-}
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
-app.UseRouting();
+app.UseMiddleware<GlobalExceptionHandler>();
+app.UseMiddleware<RequestTiming>();
 
+app.UseRouting();
 app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())

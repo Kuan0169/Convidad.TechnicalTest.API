@@ -1,55 +1,67 @@
-﻿using Convidad.TechnicalTest.API.DTOs.Error;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Convidad.TechnicalTest.API.Middlewares
-
-public class GlobalExceptionHandler
 {
-    private readonly RequestDelegate _next;
-    public GlobalExceptionHandler(RequestDelegate next)
+    public class GlobalExceptionHandler
     {
-        _next = next;
-        _logger = logger;
-    }
-
-    public async Task InvokeAsync(HttpContext context)
-    {
-        try
+        private readonly RequestDelegate _next;
+        private readonly ILogger<GlobalExceptionHandler> _logger;
+        public GlobalExceptionHandler(RequestDelegate next,
+            ILogger<GlobalExceptionHandler> logger)
         {
-            await _next(context);
+            _next = next;
+            _logger = logger;
         }
-        catch (Exception ex)
+
+        public async Task InvokeAsync(HttpContext context)
         {
-            _logger.LogError(ex, "Unhandled exception occurred");
-            await HandleExceptionAsync(context, ex);
+            try
+            {
+                await _next(context);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unhandled exception occurred");
+                await HandleExceptionAsync(context, ex);
+            }
         }
-    }
 
-    private Task HandleExceptionAsync(HttpContext context, Exception exception)
-    {
-        context.Response.ContentType = "application/json";
-
-        var response = exception switch
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            KeyNotFoundException => new ErrorResponse(
-                message: "Resource not found",
-                detail: exception.Message,
-                statusCode: StatusCodes.Status404NotFound),
+            // 設定基本回應屬性
+            context.Response.ContentType = "application/json";
 
-            ArgumentException or ArgumentNullException => new ErrorResponse(
-                message: "Invalid request parameters",
-                detail: exception.Message,
-                statusCode: StatusCodes.Status400BadRequest),
+            var statusCode = exception switch
+            {
+                KeyNotFoundException => StatusCodes.Status404NotFound,
+                ArgumentException or ArgumentNullException => StatusCodes.Status400BadRequest,
+                _ => StatusCodes.Status500InternalServerError
+            };
 
-            _ => new ErrorResponse(
-                message: "An unexpected error occurred",
-                detail: appEnvironment.IsDevelopment() ? exception.ToString() : null,
-                statusCode: StatusCodes.Status500InternalServerError)
-        };
+            var message = exception switch
+            {
+                KeyNotFoundException => "Resource not found",
+                ArgumentException or ArgumentNullException => "Invalid request parameters",
+                _ => "An unexpected error occurred"
+            };
 
-        var appEnvironment = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
+            // 建立簡單的 JSON 物件
+            var jsonResponse = $"{{\"message\":\"{message}\",\"statusCode\":{statusCode}}}";
 
-        context.Response.StatusCode = response.StatusCode;
-        return context.Response.WriteAsJsonAsync(response);
+            // 設定狀態碼
+            context.Response.StatusCode = statusCode;
+
+            try
+            {
+                // 使用最基礎的寫入方式
+                await context.Response.WriteAsync(jsonResponse);
+            }
+            catch
+            {
+                // 如果寫入失敗，至少確保狀態碼正確
+                // 不要拋出新例外
+            }
+        }
     }
 }
