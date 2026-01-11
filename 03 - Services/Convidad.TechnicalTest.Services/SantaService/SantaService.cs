@@ -1,7 +1,6 @@
 ﻿using Convidad.TechnicalTest.Data.Entities;
 using Convidad.TechnicalTest.Data.Enums;
 using Convidad.TechnicalTest.Data.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace Convidad.TechnicalTest.Services.SantaService
 {

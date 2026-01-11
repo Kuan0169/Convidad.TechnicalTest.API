@@ -25,7 +25,6 @@ namespace Convidad.TechnicalTest.Tests.Services
             using var context = DbInitializer.InitializeDatabase(santaDb);
         }
 
-
         [Fact]
         public void GetAllChildren_ReturnsAllChildren()
         {

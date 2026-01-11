@@ -1,5 +1,4 @@
-﻿using Convidad.TechnicalTest.API.DTOs.Error;
-using Convidad.TechnicalTest.Data.Context;
+﻿using Convidad.TechnicalTest.Data.Context;
 using Convidad.TechnicalTest.Data.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -64,14 +63,6 @@ namespace Convidad.TechnicalTest.Tests.Integration
 
             // Assert
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        }
-
-        private async Task InitializeDatabaseAsync()
-        {
-            using var scope = _factory.Services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<SantaDbContext>();
-            await dbContext.Database.EnsureCreatedAsync();
-            // 注意：整合測試通常不使用 DbInitializer，而是手動建立測試資料
         }
     }
 }

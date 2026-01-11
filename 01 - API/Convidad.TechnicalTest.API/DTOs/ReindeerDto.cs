@@ -1,5 +1,4 @@
-﻿
-namespace Convidad.TechnicalTest.API.DTOs
+﻿namespace Convidad.TechnicalTest.API.DTOs
 {
     public record ReindeerDto(
        Guid Id,

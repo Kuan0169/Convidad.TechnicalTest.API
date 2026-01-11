@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
-
-namespace Convidad.TechnicalTest.API.Middlewares
+﻿namespace Convidad.TechnicalTest.API.Middlewares
 {
     public class GlobalExceptionHandler
     {
@@ -29,7 +26,6 @@ namespace Convidad.TechnicalTest.API.Middlewares
 
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            // 設定基本回應屬性
             context.Response.ContentType = "application/json";
 
             var statusCode = exception switch
@@ -46,21 +42,21 @@ namespace Convidad.TechnicalTest.API.Middlewares
                 _ => "An unexpected error occurred"
             };
 
-            // 建立簡單的 JSON 物件
             var jsonResponse = $"{{\"message\":\"{message}\",\"statusCode\":{statusCode}}}";
-
-            // 設定狀態碼
             context.Response.StatusCode = statusCode;
 
             try
             {
-                // 使用最基礎的寫入方式
                 await context.Response.WriteAsync(jsonResponse);
             }
-            catch
+            catch (Exception writeEx)
             {
-                // 如果寫入失敗，至少確保狀態碼正確
-                // 不要拋出新例外
+                var loggerFactory = context.RequestServices.GetService<ILoggerFactory>();
+                if (loggerFactory != null)
+                {
+                    var logger = loggerFactory.CreateLogger<GlobalExceptionHandler>();
+                    logger.LogWarning("Failed to write error response: {Message}", writeEx.Message);
+                }
             }
         }
     }
