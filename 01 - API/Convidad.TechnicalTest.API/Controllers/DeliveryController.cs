@@ -78,9 +78,9 @@ namespace Convidad.TechnicalTest.API.Controllers
                     reindeer.Weight, reindeer.Packets);
                 return Ok(dto);
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
-                return NotFound($"Reindeer with ID {id} not found.");
+                return NotFound(ex.Message);
             }
         }
 
