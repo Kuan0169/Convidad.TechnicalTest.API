@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\02 - Data\Cinvidad.TechnicalTest.Data\Convidad.TechnicalTest.Data.csproj" />
     <ProjectReference Include="..\..\03 - Services\Convidad.TechnicalTest.Services\Convidad.TechnicalTest.Services.csproj" />
+    <ProjectReference Include="..\..\ClassLibrary1\Convidad.TechnicalTest.Models.csproj" />
   </ItemGroup>
 
 </Project>
