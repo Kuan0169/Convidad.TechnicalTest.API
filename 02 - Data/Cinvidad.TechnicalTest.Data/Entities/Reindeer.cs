@@ -17,10 +17,10 @@ namespace Convidad.TechnicalTest.Data.Entities
         public string PlateNumber { get; set; } = default!;
 
         [Range(0, double.MaxValue)]
-        public double Weight { get; set; } // 單位：kg
+        public double Weight { get; set; }
 
         [Range(0, int.MaxValue)]
-        public int Packets { get; set; } // 可攜帶包裹數
+        public int Packets { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     }

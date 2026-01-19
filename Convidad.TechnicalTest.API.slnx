@@ -8,6 +8,9 @@
   <Folder Name="/03 - Services/">
     <Project Path="03 - Services/Convidad.TechnicalTest.Services/Convidad.TechnicalTest.Services.csproj" Id="ea8656db-ef05-498f-b9bd-600bbfcc9618" />
   </Folder>
+  <Folder Name="/04 - Models/">
+    <Project Path="ClassLibrary1/Convidad.TechnicalTest.Models.csproj" Id="f050bb86-c7dc-47f7-b733-6eaf44eb85f1" />
+  </Folder>
   <Folder Name="/99 - Tests/">
     <Project Path="99 - Tests/Convidad.TechnicalTest.Tests/Convidad.TechnicalTest.Tests.csproj" Id="47a2e9eb-f767-4b64-a9fc-67c386139fe2" />
   </Folder>

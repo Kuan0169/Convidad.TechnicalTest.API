@@ -1,4 +1,4 @@
-﻿namespace Convidad.TechnicalTest.API.DTOs
+﻿namespace Convidad.TechnicalTest.Models.DTOs
 { 
     public record ChildDto(
         Guid Id,
