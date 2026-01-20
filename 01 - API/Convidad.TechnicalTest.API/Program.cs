@@ -50,8 +50,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.UseMiddleware<GlobalExceptionHandler>();
 app.UseMiddleware<RequestTiming>();
+app.UseMiddleware<GlobalExceptionHandler>();
 
 app.UseRouting();
 app.UseAuthorization();

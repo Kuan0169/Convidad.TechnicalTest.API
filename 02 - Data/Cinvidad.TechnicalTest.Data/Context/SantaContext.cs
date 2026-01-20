@@ -1,9 +1,5 @@
 ﻿using Convidad.TechnicalTest.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Text;
 
 namespace Convidad.TechnicalTest.Data.Context
 {
@@ -16,27 +12,41 @@ namespace Convidad.TechnicalTest.Data.Context
         public DbSet<Route> Routes => Set<Route>();
         public DbSet<Delivery> Deliveries => Set<Delivery>();
         public DbSet<Reindeer> Reindeers => Set<Reindeer>();
+        public DbSet<RouteReindeer> RouteReindeers => Set<RouteReindeer>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Child -> Wishes (1:N)
             modelBuilder.Entity<Wish>()
-                .HasOne(w => w.Child);
+                .HasOne(w => w.Child)
+                .WithMany(c => c.Wishes)
+                .HasForeignKey(w => w.ChildId);
 
-            // Child -> Deliveries (1:N)
             modelBuilder.Entity<Delivery>()
-                .HasOne(d => d.Child);
+                .HasOne(d => d.Child)
+                .WithMany(c => c.Deliveries)
+                .HasForeignKey(d => d.ChildId);
 
-            // Route -> Deliveries (1:N)
             modelBuilder.Entity<Delivery>()
-                .HasOne(d => d.Route);
+                .HasOne(d => d.Route)
+                .WithMany(r => r.Deliveries)
+                .HasForeignKey(d => d.RouteId);
 
-            // Delivery -> Reindeer (N:1)
-            modelBuilder.Entity<Delivery>()
-                .HasOne(d => d.Reindeer);
+            modelBuilder.Entity<RouteReindeer>(entity =>
+            {
+                entity.HasKey(rr => new { rr.RouteId, rr.ReindeerId });
 
+                entity.HasOne(rr => rr.Route)
+                    .WithMany(r => r.AssignedReindeers)
+                    .HasForeignKey(rr => rr.RouteId)
+                    .OnDelete(DeleteBehavior.Cascade);
+ 
+                entity.HasOne(rr => rr.Reindeer)
+                    .WithMany(r => r.AssignedRoutes)
+                    .HasForeignKey(rr => rr.ReindeerId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
             modelBuilder.Entity<Delivery>()
                 .HasIndex(d => new { d.ChildId, d.ScheduledFor })

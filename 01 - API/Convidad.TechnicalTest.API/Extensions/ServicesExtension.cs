@@ -1,10 +1,17 @@
-﻿namespace Convidad.TechnicalTest.API.Extensions
+﻿using Convidad.TechnicalTest.Services;
+
+namespace Convidad.TechnicalTest.API.Extensions
 {
     public static class ServicesExtension
     {
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            services.AddScoped<Services.SantaService.ISantaService, Services.SantaService.SantaService>();
+            services.AddScoped<IChildrenService, ChildrenService>();
+            services.AddScoped<IWishlistService, WishlistService>();
+            services.AddScoped<IDeliveriesService, DeliveriesService>();
+            services.AddScoped<IReindeersService, ReindeersService>();
+            services.AddScoped<IRouteReindeerService, RouteReindeerService>();
+
             return services;
         }
     }

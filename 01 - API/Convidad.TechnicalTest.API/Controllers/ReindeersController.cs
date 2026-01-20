@@ -1,5 +1,5 @@
 ﻿using Convidad.TechnicalTest.Models.DTOs;
-using Microsoft.AspNetCore.Http;
+using Convidad.TechnicalTest.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Convidad.TechnicalTest.API.Controllers;
@@ -11,17 +11,19 @@ public class ReindeersController(IReindeersService reindeersService) : Controlle
     private readonly IReindeersService _reindeersService = reindeersService;
 
     [HttpGet]
-    public ActionResult<IEnumerable<ReindeerDto>> GetAllReindeers()
+    public async Task<ActionResult<IEnumerable<ReindeerDto>>> GetAllReindeers()
     {
-        return Ok(_reindeersService.GetAllReindeers());
+        var reindeers = await _reindeersService.GetAllReindeersAsync();
+        return Ok(reindeers);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<ReindeerDto> GetReindeerById(Guid id)
+    public async Task<ActionResult<ReindeerDto>> GetReindeerById(Guid id)
     {
         try
         {
-            return Ok(_reindeersService.GetReindeerById(id));
+            var reindeer = await _reindeersService.GetReindeerByIdAsync(id);
+            return Ok(reindeer);
         }
         catch (KeyNotFoundException ex)
         {
@@ -30,12 +32,12 @@ public class ReindeersController(IReindeersService reindeersService) : Controlle
     }
 
     [HttpPost]
-    public ActionResult<ReindeerDto> AddReindeer([FromBody] ReindeerDto reindeerDto)
+    public async Task<ActionResult<ReindeerDto>> AddReindeer([FromBody] ReindeerDto reindeerDto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var createdDto = _reindeersService.AddReindeer(reindeerDto);
+        var createdDto = await _reindeersService.AddReindeerAsync(reindeerDto);
         return CreatedAtAction(nameof(GetReindeerById), new { id = createdDto.Id }, createdDto);
     }
 }
