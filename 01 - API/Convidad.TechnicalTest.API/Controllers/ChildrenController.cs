@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Convidad.TechnicalTest.Models.DTOs;
-using Convidad.TechnicalTest.Services.SantaService;
+using Convidad.TechnicalTest.Services;
 
 namespace Convidad.TechnicalTest.API.Controllers;
 
@@ -11,14 +11,16 @@ public class ChildrenController(IChildrenService childrenService) : ControllerBa
     private readonly IChildrenService _childrenService = childrenService;
 
     [HttpGet]
-    public ActionResult<IEnumerable<ChildDto>> GetAllChildren()
+    public async Task<ActionResult<IEnumerable<ChildDto>>> GetAllChildren()
     {
-        return Ok(_childrenService.GetAllChildren());
+        var children = await _childrenService.GetAllChildrenAsync();
+        return Ok(children);
     }
 
     [HttpGet("naughty")]
-    public ActionResult<IEnumerable<ChildDto>> GetNaughtyChildren()
+    public async Task<ActionResult<IEnumerable<ChildDto>>> GetNaughtyChildren()
     {
-        return Ok(_childrenService.GetNaughtyChildren());
+        var children = await _childrenService.GetNaughtyChildrenAsync();
+        return Ok(children);
     }
 }

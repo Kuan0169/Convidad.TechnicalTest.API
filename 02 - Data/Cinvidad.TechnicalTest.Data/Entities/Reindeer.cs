@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Convidad.TechnicalTest.Data.Entities
 {
@@ -11,17 +8,14 @@ namespace Convidad.TechnicalTest.Data.Entities
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [Required, MaxLength(100)]
-        public string Name { get; set; } = default!;
+        public string Name { get; set; } = string.Empty;
 
-        [Required, MaxLength(20)]
-        public string PlateNumber { get; set; } = default!;
+        [Required, MaxLength(50)]
+        public string PlateNumber { get; set; } = string.Empty;
 
-        [Range(0, double.MaxValue)]
         public double Weight { get; set; }
 
-        [Range(0, int.MaxValue)]
         public int Packets { get; set; }
-
-        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public virtual ICollection<RouteReindeer> AssignedRoutes { get; set; } = new List<RouteReindeer>();
     }
 }

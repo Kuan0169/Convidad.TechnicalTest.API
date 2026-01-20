@@ -1,5 +1,5 @@
 ﻿using Convidad.TechnicalTest.Models.DTOs;
-using Convidad.TechnicalTest.Services.SantaService;
+using Convidad.TechnicalTest.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Convidad.TechnicalTest.API.Controllers;
@@ -11,14 +11,16 @@ public class WishlistController(IWishlistService wishlistService) : ControllerBa
     private readonly IWishlistService _wishlistService = wishlistService;
 
     [HttpGet("children/{childId}")]
-    public ActionResult<IEnumerable<WishDto>> GetWishlistByChildId(Guid childId)
+    public async Task<ActionResult<IEnumerable<WishDto>>> GetWishlistByChildId(Guid childId)
     {
-        return Ok(_wishlistService.GetWishlistByChildId(childId));
+        var wishes = await _wishlistService.GetWishlistByChildIdAsync(childId);
+        return Ok(wishes);
     }
 
     [HttpGet("children/{childId}/priority")]
-    public ActionResult<IEnumerable<WishDto>> GetWishlistByChildIdOrderedByPriority(Guid childId)
+    public async Task<ActionResult<IEnumerable<WishDto>>> GetWishlistByChildIdOrderedByPriority(Guid childId)
     {
-        return Ok(_wishlistService.GetWishlistByChildIdOrderedByPriority(childId));
+        var wishes = await _wishlistService.GetWishlistByChildIdOrderedByPriorityAsync(childId);
+        return Ok(wishes);
     }
 }

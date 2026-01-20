@@ -1,10 +1,7 @@
 ﻿using Convidad.TechnicalTest.Data.Enums;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
-using System.Text.Json.Serialization;
+
 
 namespace Convidad.TechnicalTest.Data.Entities
 {
@@ -40,10 +37,5 @@ namespace Convidad.TechnicalTest.Data.Entities
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
         public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
-
-        [ForeignKey(nameof(ReindeerId))]
-        public Reindeer? Reindeer { get; set; }
-
-        public Guid? ReindeerId { get; set; }
     }
 }

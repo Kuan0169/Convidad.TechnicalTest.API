@@ -1,50 +1,53 @@
-﻿namespace Convidad.TechnicalTest.API.Middlewares
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+
+namespace Convidad.TechnicalTest.API.Middlewares;
+
+public class RequestTiming
 {
-    public class RequestTiming
+    private readonly RequestDelegate _next;
+    private readonly ILogger<RequestTiming> _logger;
+    private readonly double _slowRequestThresholdMs;
+    public RequestTiming(
+        RequestDelegate next,
+        ILogger<RequestTiming> logger,
+        IConfiguration configuration)
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<RequestTiming> _logger;
-        private readonly double _slowRequestThresholdMs;
-        public RequestTiming(
-            RequestDelegate next,
-            ILogger<RequestTiming> logger,
-            IConfiguration configuration)
+        _next = next;
+        _logger = logger;
+        _slowRequestThresholdMs = configuration
+            .GetValue<double>("SlowRequestThresholdMs", 500);
+    }
+    public async Task InvokeAsync(HttpContext context)
+    {
+        var startTime = DateTime.UtcNow;
+        var originalBodyStream = context.Response.Body;
+
+        using var responseBody = new MemoryStream();
+        context.Response.Body = responseBody;
+
+        try
         {
-            _next = next;
-            _logger = logger;
-            _slowRequestThresholdMs = configuration
-                .GetValue<double>("SlowRequestThresholdMs", 500);
+            await _next(context);
+
+            var duration = DateTime.UtcNow - startTime;
+            var durationMs = duration.TotalMilliseconds;
+
+            if (durationMs > _slowRequestThresholdMs)
+            {
+                _logger.LogWarning(
+                    "Slow request: {Method} {Path} | Status: {StatusCode} | Duration: {DurationMs}ms",
+                    context.Request.Method,
+                    context.Request.Path,
+                    context.Response.StatusCode,
+                    durationMs);
+            }
         }
-        public async Task InvokeAsync(HttpContext context)
+        finally
         {
-            var startTime = DateTime.UtcNow;
-            var originalBodyStream = context.Response.Body;
-
-            using var responseBody = new MemoryStream();
-            context.Response.Body = responseBody;
-
-            try
-            {
-                await _next(context);
-
-                var duration = DateTime.UtcNow - startTime;
-                var durationMs = duration.TotalMilliseconds;
-
-                if (durationMs > _slowRequestThresholdMs)
-                {
-                    _logger.LogWarning(
-                        "Slow request detected: {Method} {Path} took {ElapsedMilliseconds} ms",
-                        context.Request.Method,
-                        context.Request.Path,
-                        context.Response.StatusCode,
-                        durationMs);
-                }
-            }
-            finally
-            {
-                responseBody.Position = 0;
-                await responseBody.CopyToAsync(originalBodyStream);
-            }
+            responseBody.Position = 0;
+            await responseBody.CopyToAsync(originalBodyStream);
         }
     }
 }

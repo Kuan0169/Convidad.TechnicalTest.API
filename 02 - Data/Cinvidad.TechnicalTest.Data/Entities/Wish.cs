@@ -1,9 +1,6 @@
 ﻿using Convidad.TechnicalTest.Data.Enums;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace Convidad.TechnicalTest.Data.Entities
 {
@@ -20,7 +17,6 @@ namespace Convidad.TechnicalTest.Data.Entities
 
         public WishCategory Category { get; set; } = WishCategory.Other;
 
-        // 1..5 typically
         [Range(1, 5)]
         public int Priority { get; set; } = 3;
 

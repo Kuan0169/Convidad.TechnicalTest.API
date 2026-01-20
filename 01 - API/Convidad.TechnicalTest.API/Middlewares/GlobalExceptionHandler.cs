@@ -1,62 +1,65 @@
-﻿namespace Convidad.TechnicalTest.API.Middlewares
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Convidad.TechnicalTest.API.Middlewares;
+
+public class GlobalExceptionHandler
 {
-    public class GlobalExceptionHandler
+    private readonly RequestDelegate _next;
+    private readonly ILogger<GlobalExceptionHandler> _logger;
+    public GlobalExceptionHandler(RequestDelegate next,
+        ILogger<GlobalExceptionHandler> logger)
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<GlobalExceptionHandler> _logger;
-        public GlobalExceptionHandler(RequestDelegate next,
-            ILogger<GlobalExceptionHandler> logger)
+        _next = next;
+        _logger = logger;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        try
         {
-            _next = next;
-            _logger = logger;
+            await _next(context);
         }
-
-        public async Task InvokeAsync(HttpContext context)
+        catch (Exception ex)
         {
-            try
-            {
-                await _next(context);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unhandled exception occurred");
-                await HandleExceptionAsync(context, ex);
-            }
+            _logger.LogError(ex, "Unhandled exception occurred");
+            await HandleExceptionAsync(context, ex);
         }
+    }
 
-        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    {
+        context.Response.ContentType = "application/json";
+
+        var statusCode = exception switch
         {
-            context.Response.ContentType = "application/json";
+            KeyNotFoundException => StatusCodes.Status404NotFound,
+            ArgumentException or ArgumentNullException => StatusCodes.Status400BadRequest,
+            _ => StatusCodes.Status500InternalServerError
+        };
 
-            var statusCode = exception switch
-            {
-                KeyNotFoundException => StatusCodes.Status404NotFound,
-                ArgumentException or ArgumentNullException => StatusCodes.Status400BadRequest,
-                _ => StatusCodes.Status500InternalServerError
-            };
+        var message = exception switch
+        {
+            KeyNotFoundException => "Resource not found",
+            ArgumentException or ArgumentNullException => "Invalid request parameters",
+            _ => "An unexpected error occurred"
+        };
 
-            var message = exception switch
-            {
-                KeyNotFoundException => "Resource not found",
-                ArgumentException or ArgumentNullException => "Invalid request parameters",
-                _ => "An unexpected error occurred"
-            };
+        var jsonResponse = $"{{\"message\":\"{message}\",\"statusCode\":{statusCode}}}";
+        context.Response.StatusCode = statusCode;
 
-            var jsonResponse = $"{{\"message\":\"{message}\",\"statusCode\":{statusCode}}}";
-            context.Response.StatusCode = statusCode;
-
-            try
+        try
+        {
+            await context.Response.WriteAsync(jsonResponse);
+        }
+        catch (Exception writeEx)
+        {
+            var loggerFactory = context.RequestServices.GetService<ILoggerFactory>();
+            if (loggerFactory != null)
             {
-                await context.Response.WriteAsync(jsonResponse);
-            }
-            catch (Exception writeEx)
-            {
-                var loggerFactory = context.RequestServices.GetService<ILoggerFactory>();
-                if (loggerFactory != null)
-                {
-                    var logger = loggerFactory.CreateLogger<GlobalExceptionHandler>();
-                    logger.LogWarning("Failed to write error response: {Message}", writeEx.Message);
-                }
+                var logger = loggerFactory.CreateLogger<GlobalExceptionHandler>();
+                logger.LogWarning("Failed to write error response: {Message}", writeEx.Message);
             }
         }
     }
