@@ -8,6 +8,7 @@ public interface IChildrenService
 {
     Task<IEnumerable<ChildDto>> GetAllChildrenAsync();
     Task<IEnumerable<ChildDto>> GetNaughtyChildrenAsync();
+    Task<ChildDto> AddChildAsync(CreateChildDto childDto);
 }
 
 public class ChildrenService(SantaDbContext santaDb) : IChildrenService
@@ -26,5 +27,20 @@ public class ChildrenService(SantaDbContext santaDb) : IChildrenService
             .Where(c => !c.IsNice)
             .ToListAsync();
         return children.Select(c => new ChildDto(c.Id, c.Name, c.CountryCode, c.IsNice));
+    }
+
+    public async Task<ChildDto> AddChildAsync(CreateChildDto childDto)
+    {
+        var child = new Child
+        {
+            Name = childDto.Name,
+            CountryCode = childDto.CountryCode,
+            IsNice = childDto.IsNice
+        };
+
+        santaDb.Children.Add(child);
+        await santaDb.SaveChangesAsync();
+
+        return new ChildDto(child.Id, child.Name, child.CountryCode, child.IsNice);
     }
 }
