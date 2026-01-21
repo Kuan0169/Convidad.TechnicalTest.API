@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Convidad.TechnicalTest.Services;
 public interface IChildrenService
 {
-    Task<IEnumerable<ChildDto>> GetAllChildrenAsync();
-    Task<IEnumerable<ChildDto>> GetNaughtyChildrenAsync();
+    Task<IEnumerable<ChildDto>> GetChildrenAsync(bool? isNice = null);
     Task<ChildDto> AddChildAsync(CreateChildDto childDto);
     Task DeleteChildAsync(Guid id);
 }
@@ -16,17 +15,16 @@ public class ChildrenService(SantaDbContext santaDb) : IChildrenService
 {
     private readonly SantaDbContext santaDb = santaDb;
 
-    public async Task<IEnumerable<ChildDto>> GetAllChildrenAsync()
+    public async Task<IEnumerable<ChildDto>> GetChildrenAsync(bool? isNice = null)
     {
-        var children = await santaDb.Children.ToListAsync();
-        return children.Select(c => new ChildDto(c.Id, c.Name, c.CountryCode, c.IsNice));
-    }
+        var query = santaDb.Children.AsQueryable();
 
-    public async Task<IEnumerable<ChildDto>> GetNaughtyChildrenAsync()
-    {
-        var children = await santaDb.Children
-            .Where(c => !c.IsNice)
-            .ToListAsync();
+        if (isNice.HasValue)
+        {
+            query = query.Where(c => c.IsNice == isNice.Value);
+        }
+
+        var children = await query.ToListAsync();
         return children.Select(c => new ChildDto(c.Id, c.Name, c.CountryCode, c.IsNice));
     }
 

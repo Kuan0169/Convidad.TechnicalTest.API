@@ -10,7 +10,6 @@ namespace Convidad.TechnicalTest.API.Extensions
             services.AddScoped<IWishlistService, WishlistService>();
             services.AddScoped<IDeliveriesService, DeliveriesService>();
             services.AddScoped<IReindeersService, ReindeersService>();
-            services.AddScoped<IRouteReindeerService, RouteReindeerService>();
             services.AddScoped<IRoutesService, RoutesService>();
 
             return services;
