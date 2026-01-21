@@ -24,7 +24,7 @@ public class ChildrenServiceTest
     }
 
     [Fact]
-    public async Task GetAllChildren_ReturnsAllChildren()
+    public async Task GetChildrenAsync_NullFilter_ReturnsAllChildren()
     {
         // Arrange
         var children = new List<Child>
@@ -38,7 +38,7 @@ public class ChildrenServiceTest
         var service = new ChildrenService(santaDb);
 
         // Act
-        var result = await service.GetAllChildrenAsync();
+        var result = await service.GetChildrenAsync(null);
 
         // Assert
         Assert.NotNull(result);
@@ -46,7 +46,7 @@ public class ChildrenServiceTest
     }
 
     [Fact]
-    public async Task GetNaughtyChildren_ReturnsOnlyNaughtyChildren()
+    public async Task GetChildrenAsync_IsNiceFalse_ReturnsOnlyNaughtyChildren()
     {
         // Arrange
         var children = new List<Child>
@@ -61,7 +61,7 @@ public class ChildrenServiceTest
         var service = new ChildrenService(santaDb);
 
         // Act
-        var result = await service.GetNaughtyChildrenAsync();
+        var result = await service.GetChildrenAsync(false);
 
         // Assert
         Assert.NotNull(result);
@@ -70,7 +70,7 @@ public class ChildrenServiceTest
     }
 
     [Fact]
-    public async Task GetNaughtyChildren_EmptyList_ReturnsEmpty()
+    public async Task GetChildrenAsync_IsNiceFalse_EmptyList_ReturnsEmpty()
     {
         // Arrange
         var children = new List<Child>
@@ -84,7 +84,7 @@ public class ChildrenServiceTest
         var service = new ChildrenService(santaDb);
 
         // Act
-        var result = await service.GetNaughtyChildrenAsync();
+        var result = await service.GetChildrenAsync(false);
 
         // Assert
         Assert.NotNull(result);

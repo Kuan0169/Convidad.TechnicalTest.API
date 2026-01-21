@@ -19,7 +19,8 @@ public class ChildrenControllerTest
             new ChildDto(Guid.NewGuid(), "Alice", "US", true),
             new ChildDto(Guid.NewGuid(), "Bob", "CA", false)
         };
-        mockService.Setup(s => s.GetAllChildrenAsync()).ReturnsAsync(children);
+
+        mockService.Setup(s => s.GetChildrenAsync(null)).ReturnsAsync(children);
         var controller = new ChildrenController(mockService.Object);
 
         // Act
@@ -41,7 +42,8 @@ public class ChildrenControllerTest
             new ChildDto(Guid.NewGuid(), "Charlie", "UK", false),
             new ChildDto(Guid.NewGuid(), "Diana", "AU", false)
         };
-        mockService.Setup(s => s.GetNaughtyChildrenAsync()).ReturnsAsync(naughtyChildren);
+
+        mockService.Setup(s => s.GetChildrenAsync(false)).ReturnsAsync(naughtyChildren);
         var controller = new ChildrenController(mockService.Object);
 
         // Act
@@ -62,7 +64,8 @@ public class ChildrenControllerTest
         // Arrange
         var mockService = new Mock<IChildrenService>();
         var emptyList = new List<ChildDto>();
-        mockService.Setup(s => s.GetNaughtyChildrenAsync()).ReturnsAsync(emptyList);
+
+        mockService.Setup(s => s.GetChildrenAsync(false)).ReturnsAsync(emptyList);
         var controller = new ChildrenController(mockService.Object);
 
         // Act

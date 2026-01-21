@@ -112,4 +112,166 @@ public class RoutesServiceTest
         await Assert.ThrowsAsync<KeyNotFoundException>(() =>
             service.DeleteRouteAsync(invalidId));
     }
+
+    [Fact]
+    public async Task AssignReindeerToRoute_ValidIds_CreatesAssignment()
+    {
+        // Arrange
+        var route = new Route { Name = "North Pole Route", Region = "Arctic", CapacityPerNight = 50 };
+        var reindeer = new Reindeer { Name = "Rudolph", PlateNumber = "XMAS-001", Weight = 100.0, Packets = 50 };
+        santaDb.Routes.Add(route);
+        santaDb.Reindeers.Add(reindeer);
+        await santaDb.SaveChangesAsync();
+
+        var service = new RoutesService(santaDb);
+
+        // Act
+        await service.AssignReindeerToRouteAsync(route.Id, reindeer.Id, 15);
+
+        // Assert
+        var assignment = await santaDb.RouteReindeers
+            .Where(rr => rr.RouteId == route.Id && rr.ReindeerId == reindeer.Id)
+            .FirstOrDefaultAsync();
+        Assert.NotNull(assignment);
+        Assert.Equal(15, assignment.MaxDeliveries);
+        Assert.Equal(0, assignment.CurrentDeliveries);
+    }
+
+    [Fact]
+    public async Task AssignReindeerToRoute_InvalidRouteId_ThrowsKeyNotFoundException()
+    {
+        // Arrange
+        var reindeer = new Reindeer { Name = "Rudolph", PlateNumber = "XMAS-001", Weight = 100.0, Packets = 50 };
+        santaDb.Reindeers.Add(reindeer);
+        await santaDb.SaveChangesAsync();
+
+        var service = new RoutesService(santaDb);
+        var invalidRouteId = Guid.NewGuid();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            service.AssignReindeerToRouteAsync(invalidRouteId, reindeer.Id, 10));
+    }
+
+    [Fact]
+    public async Task AssignReindeerToRoute_InvalidReindeerId_ThrowsKeyNotFoundException()
+    {
+        // Arrange
+        var route = new Route { Name = "North Pole Route", Region = "Arctic", CapacityPerNight = 50 };
+        santaDb.Routes.Add(route);
+        await santaDb.SaveChangesAsync();
+
+        var service = new RoutesService(santaDb);
+        var invalidReindeerId = Guid.NewGuid();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            service.AssignReindeerToRouteAsync(route.Id, invalidReindeerId, 10));
+    }
+
+    [Fact]
+    public async Task RemoveReindeerFromRoute_ValidIds_RemovesAssignment()
+    {
+        // Arrange
+        var route = new Route { Name = "North Pole Route", Region = "Arctic", CapacityPerNight = 50 };
+        var reindeer = new Reindeer { Name = "Rudolph", PlateNumber = "XMAS-001", Weight = 100.0, Packets = 50 };
+        santaDb.Routes.Add(route);
+        santaDb.Reindeers.Add(reindeer);
+        await santaDb.SaveChangesAsync();
+
+        var service = new RoutesService(santaDb);
+        await service.AssignReindeerToRouteAsync(route.Id, reindeer.Id, 10);
+
+        // Act
+        await service.RemoveReindeerFromRouteAsync(route.Id, reindeer.Id);
+
+        // Assert
+        var assignment = await santaDb.RouteReindeers
+            .Where(rr => rr.RouteId == route.Id && rr.ReindeerId == reindeer.Id)
+            .FirstOrDefaultAsync();
+        Assert.Null(assignment);
+    }
+
+    [Fact]
+    public async Task GetReindeersForRoute_ValidRouteId_ReturnsAssignedReindeers()
+    {
+        // Arrange
+        var route = new Route { Name = "North Pole Route", Region = "Arctic", CapacityPerNight = 50 };
+        var reindeer1 = new Reindeer { Name = "Rudolph", PlateNumber = "XMAS-001", Weight = 100.0, Packets = 50 };
+        var reindeer2 = new Reindeer { Name = "Blitzen", PlateNumber = "XMAS-002", Weight = 95.0, Packets = 45 };
+        santaDb.Routes.Add(route);
+        santaDb.Reindeers.AddRange(new[] { reindeer1, reindeer2 });
+        await santaDb.SaveChangesAsync();
+
+        var service = new RoutesService(santaDb);
+        await service.AssignReindeerToRouteAsync(route.Id, reindeer1.Id, 10);
+        await service.AssignReindeerToRouteAsync(route.Id, reindeer2.Id, 8);
+
+        // Act
+        var result = await service.GetReindeersForRouteAsync(route.Id);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count());
+        Assert.Contains(result, r => r.Name == "Rudolph");
+        Assert.Contains(result, r => r.Name == "Blitzen");
+    }
+
+    [Fact]
+    public async Task GetReindeersForRoute_InvalidRouteId_ThrowsKeyNotFoundException()
+    {
+        // Arrange
+        var service = new RoutesService(santaDb);
+        var invalidRouteId = Guid.NewGuid();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            service.GetReindeersForRouteAsync(invalidRouteId));
+    }
+
+    [Fact]
+    public async Task CanHandleNewDelivery_ValidRouteWithCapacity_ReturnsTrue()
+    {
+        // Arrange
+        var route = new Route { Name = "North Pole Route", Region = "Arctic", CapacityPerNight = 50 };
+        var reindeer = new Reindeer { Name = "Rudolph", PlateNumber = "XMAS-001", Weight = 100.0, Packets = 50 };
+        santaDb.Routes.Add(route);
+        santaDb.Reindeers.Add(reindeer);
+        await santaDb.SaveChangesAsync();
+
+        var service = new RoutesService(santaDb);
+        await service.AssignReindeerToRouteAsync(route.Id, reindeer.Id, 10);
+
+        // Act
+        var result = await service.CanHandleNewDeliveryAsync(route.Id);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public async Task CanHandleNewDelivery_ValidRouteAtCapacity_ReturnsFalse()
+    {
+        // Arrange
+        var route = new Route { Name = "North Pole Route", Region = "Arctic", CapacityPerNight = 50 };
+        var reindeer = new Reindeer { Name = "Rudolph", PlateNumber = "XMAS-001", Weight = 100.0, Packets = 50 };
+        santaDb.Routes.Add(route);
+        santaDb.Reindeers.Add(reindeer);
+        await santaDb.SaveChangesAsync();
+
+        var service = new RoutesService(santaDb);
+        await service.AssignReindeerToRouteAsync(route.Id, reindeer.Id, 5);
+
+        var assignment = await santaDb.RouteReindeers
+            .Where(rr => rr.RouteId == route.Id && rr.ReindeerId == reindeer.Id)
+            .FirstAsync();
+        assignment.CurrentDeliveries = 5;
+        await santaDb.SaveChangesAsync();
+
+        // Act
+        var result = await service.CanHandleNewDeliveryAsync(route.Id);
+
+        // Assert
+        Assert.False(result);
+    }
 }
