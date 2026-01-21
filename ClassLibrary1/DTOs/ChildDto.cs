@@ -5,6 +5,11 @@
     string Name,
     string CountryCode,
     bool IsNice);
+
+    public record CreateChildDto(
+    string Name,
+    string CountryCode,
+    bool IsNice = true);
 }
 
 
