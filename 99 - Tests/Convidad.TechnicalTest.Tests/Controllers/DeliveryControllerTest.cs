@@ -20,7 +20,7 @@ public class DeliveriesControllerTest
             new DeliveryDto(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Delivered", DateTimeOffset.UtcNow)
         };
         mockService.Setup(s => s.GetDeliveriesAsync()).ReturnsAsync(deliveries);
-        var controller = new DeliveriesController(mockService.Object);
+        var controller = new DeliveryController(mockService.Object);
 
         // Act
         var result = await controller.GetDeliveries();
@@ -41,7 +41,7 @@ public class DeliveriesControllerTest
             new DeliveryDto(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Failed", DateTimeOffset.UtcNow)
         };
         mockService.Setup(s => s.GetFailureDeliveriesAsync()).ReturnsAsync(failedDeliveries);
-        var controller = new DeliveriesController(mockService.Object);
+        var controller = new DeliveryController(mockService.Object);
 
         // Act
         var result = await controller.GetFailureDeliveries();
@@ -63,7 +63,7 @@ public class DeliveriesControllerTest
         var createDeliveryDto = new CreateDeliveryDto(childId, routeId);
         var createdDelivery = new DeliveryDto(Guid.NewGuid(), childId, routeId, "Pending", DateTimeOffset.UtcNow);
         mockService.Setup(s => s.AddDeliveryAsync(It.IsAny<CreateDeliveryDto>())).ReturnsAsync(createdDelivery);
-        var controller = new DeliveriesController(mockService.Object);
+        var controller = new DeliveryController(mockService.Object);
 
         // Act
         var result = await controller.AddDelivery(createDeliveryDto);
@@ -82,7 +82,7 @@ public class DeliveriesControllerTest
         // Arrange
         var mockService = new Mock<IDeliveriesService>();
         var invalidDeliveryDto = new CreateDeliveryDto(Guid.Empty, Guid.Empty);
-        var controller = new DeliveriesController(mockService.Object);
+        var controller = new DeliveryController(mockService.Object);
         controller.ModelState.AddModelError("ChildId", "Invalid GUID");
 
         // Act
@@ -103,7 +103,7 @@ public class DeliveriesControllerTest
         var createDeliveryDto = new CreateDeliveryDto(childId, routeId);
         mockService.Setup(s => s.AddDeliveryAsync(It.IsAny<CreateDeliveryDto>()))
                   .ThrowsAsync(new KeyNotFoundException($"Child with ID {childId} not found."));
-        var controller = new DeliveriesController(mockService.Object);
+        var controller = new DeliveryController(mockService.Object);
 
         // Act
         var result = await controller.AddDelivery(createDeliveryDto);
@@ -123,7 +123,7 @@ public class DeliveriesControllerTest
         var createDeliveryDto = new CreateDeliveryDto(childId, routeId);
         mockService.Setup(s => s.AddDeliveryAsync(It.IsAny<CreateDeliveryDto>()))
                   .ThrowsAsync(new KeyNotFoundException($"Route with ID {routeId} not found."));
-        var controller = new DeliveriesController(mockService.Object);
+        var controller = new DeliveryController(mockService.Object);
 
         // Act
         var result = await controller.AddDelivery(createDeliveryDto);
@@ -140,7 +140,7 @@ public class DeliveriesControllerTest
         var mockService = new Mock<IDeliveriesService>();
         var id = Guid.NewGuid();
         mockService.Setup(s => s.DeleteDeliveryAsync(id)).Returns(Task.CompletedTask);
-        var controller = new DeliveriesController(mockService.Object);
+        var controller = new DeliveryController(mockService.Object);
 
         // Act
         var result = await controller.DeleteDelivery(id);
@@ -158,7 +158,7 @@ public class DeliveriesControllerTest
         var id = Guid.NewGuid();
         mockService.Setup(s => s.DeleteDeliveryAsync(id))
                   .ThrowsAsync(new KeyNotFoundException($"Delivery with ID {id} not found."));
-        var controller = new DeliveriesController(mockService.Object);
+        var controller = new DeliveryController(mockService.Object);
 
         // Act
         var result = await controller.DeleteDelivery(id);
