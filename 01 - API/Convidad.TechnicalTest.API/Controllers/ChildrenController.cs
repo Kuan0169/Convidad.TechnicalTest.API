@@ -13,14 +13,14 @@ public class ChildrenController(IChildrenService childrenService) : ControllerBa
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ChildDto>>> GetAllChildren()
     {
-        var children = await _childrenService.GetAllChildrenAsync();
+        var children = await _childrenService.GetChildrenAsync();
         return Ok(children);
     }
 
     [HttpGet("naughty")]
     public async Task<ActionResult<IEnumerable<ChildDto>>> GetNaughtyChildren()
     {
-        var children = await _childrenService.GetNaughtyChildrenAsync();
+        var children = await _childrenService.GetChildrenAsync(isNice: false);
         return Ok(children);
     }
 
