@@ -3,10 +3,7 @@ using Convidad.TechnicalTest.Models.DTOs;
 using Convidad.TechnicalTest.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-
-
 namespace Convidad.TechnicalTest.Services;
-
 public interface IChildrenService
 {
     Task<IEnumerable<ChildDto>> GetAllChildrenAsync();

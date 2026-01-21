@@ -4,7 +4,6 @@ using Convidad.TechnicalTest.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Convidad.TechnicalTest.Services;
-
 public interface IReindeersService
 {
     Task<IEnumerable<ReindeerDto>> GetAllReindeersAsync();

@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
 namespace Convidad.TechnicalTest.Data.Entities
 {
     public class Delivery
