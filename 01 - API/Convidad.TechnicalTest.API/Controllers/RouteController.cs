@@ -6,7 +6,7 @@ namespace Convidad.TechnicalTest.API.Controllers;
 
 [ApiController]
 [Route("api/routes")]
-public class RoutesController(IRoutesService routesService) : ControllerBase
+public class RouteController(IRoutesService routesService) : ControllerBase
 {
     private readonly IRoutesService _routesService = routesService;
 

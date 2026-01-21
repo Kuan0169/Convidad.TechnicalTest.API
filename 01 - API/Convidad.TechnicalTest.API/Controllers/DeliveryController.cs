@@ -6,7 +6,7 @@ namespace Convidad.TechnicalTest.API.Controllers;
 
 [ApiController]
 [Route("api/deliveries")]
-public class DeliveriesController(IDeliveriesService deliveriesService) : ControllerBase
+public class DeliveryController(IDeliveriesService deliveriesService) : ControllerBase
 {
     private readonly IDeliveriesService _deliveriesService = deliveriesService;
 

@@ -6,7 +6,7 @@ namespace Convidad.TechnicalTest.API.Controllers;
 
 [ApiController]
 [Route("api/reindeers")]
-public class ReindeersController(IReindeersService reindeersService) : ControllerBase
+public class ReindeerController(IReindeersService reindeersService) : ControllerBase
 {
     private readonly IReindeersService _reindeersService = reindeersService;
 

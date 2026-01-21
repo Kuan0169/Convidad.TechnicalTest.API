@@ -20,7 +20,7 @@ public class ReindeersControllerTest
             new ReindeerDto(Guid.NewGuid(), "Blitzen", "XMAS-002", 95.0, 45)
         };
         mockService.Setup(s => s.GetAllReindeersAsync()).ReturnsAsync(reindeers);
-        var controller = new ReindeersController(mockService.Object);
+        var controller = new ReindeerController(mockService.Object);
 
         // Act
         var result = await controller.GetAllReindeers();
@@ -39,7 +39,7 @@ public class ReindeersControllerTest
         var id = Guid.NewGuid();
         var reindeer = new ReindeerDto(id, "Rudolph", "XMAS-001", 100.0, 50);
         mockService.Setup(s => s.GetReindeerByIdAsync(id)).ReturnsAsync(reindeer);
-        var controller = new ReindeersController(mockService.Object);
+        var controller = new ReindeerController(mockService.Object);
 
         // Act
         var result = await controller.GetReindeerById(id);
@@ -59,7 +59,7 @@ public class ReindeersControllerTest
         var id = Guid.NewGuid();
         mockService.Setup(s => s.GetReindeerByIdAsync(id))
                   .ThrowsAsync(new KeyNotFoundException($"Reindeer with ID {id} not found."));
-        var controller = new ReindeersController(mockService.Object);
+        var controller = new ReindeerController(mockService.Object);
 
         // Act
         var result = await controller.GetReindeerById(id);
@@ -76,7 +76,7 @@ public class ReindeersControllerTest
         var mockService = new Mock<IReindeersService>();
         var reindeerDto = new ReindeerDto(Guid.NewGuid(), "Comet", "XMAS-003", 90.0, 40);
         mockService.Setup(s => s.AddReindeerAsync(It.IsAny<ReindeerDto>())).ReturnsAsync(reindeerDto);
-        var controller = new ReindeersController(mockService.Object);
+        var controller = new ReindeerController(mockService.Object);
 
         // Act
         var result = await controller.AddReindeer(reindeerDto);
@@ -93,7 +93,7 @@ public class ReindeersControllerTest
         // Arrange
         var mockService = new Mock<IReindeersService>();
         var invalidReindeerDto = new ReindeerDto(Guid.Empty, "", "", -1, -1);
-        var controller = new ReindeersController(mockService.Object);
+        var controller = new ReindeerController(mockService.Object);
         controller.ModelState.AddModelError("Name", "Name is required");
 
         // Act
@@ -111,7 +111,7 @@ public class ReindeersControllerTest
         var mockService = new Mock<IReindeersService>();
         var id = Guid.NewGuid();
         mockService.Setup(s => s.DeleteReindeerAsync(id)).Returns(Task.CompletedTask);
-        var controller = new ReindeersController(mockService.Object);
+        var controller = new ReindeerController(mockService.Object);
 
         // Act
         var result = await controller.DeleteReindeer(id);
@@ -129,7 +129,7 @@ public class ReindeersControllerTest
         var id = Guid.NewGuid();
         mockService.Setup(s => s.DeleteReindeerAsync(id))
                   .ThrowsAsync(new KeyNotFoundException($"Reindeer with ID {id} not found."));
-        var controller = new ReindeersController(mockService.Object);
+        var controller = new ReindeerController(mockService.Object);
 
         // Act
         var result = await controller.DeleteReindeer(id);

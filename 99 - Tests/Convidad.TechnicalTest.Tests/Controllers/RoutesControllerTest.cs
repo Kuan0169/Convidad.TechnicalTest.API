@@ -20,7 +20,7 @@ public class RoutesControllerTest
             new RouteDto(Guid.NewGuid(), "Europe Route", "Europe", 30)
         };
         mockService.Setup(s => s.GetAllRoutesAsync()).ReturnsAsync(routes);
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.GetAllRoutes();
@@ -39,7 +39,7 @@ public class RoutesControllerTest
         var createRouteDto = new CreateRouteDto("Asia Route", "Asia", 40);
         var createdRoute = new RouteDto(Guid.NewGuid(), "Asia Route", "Asia", 40);
         mockService.Setup(s => s.AddRouteAsync(It.IsAny<CreateRouteDto>())).ReturnsAsync(createdRoute);
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.AddRoute(createRouteDto);
@@ -58,7 +58,7 @@ public class RoutesControllerTest
         // Arrange
         var mockService = new Mock<IRoutesService>();
         var invalidRouteDto = new CreateRouteDto("", "", -1);
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
         controller.ModelState.AddModelError("Name", "Name is required");
 
         // Act
@@ -76,7 +76,7 @@ public class RoutesControllerTest
         var mockService = new Mock<IRoutesService>();
         var id = Guid.NewGuid();
         mockService.Setup(s => s.DeleteRouteAsync(id)).Returns(Task.CompletedTask);
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.DeleteRoute(id);
@@ -94,7 +94,7 @@ public class RoutesControllerTest
         var id = Guid.NewGuid();
         mockService.Setup(s => s.DeleteRouteAsync(id))
                   .ThrowsAsync(new KeyNotFoundException($"Route with ID {id} not found."));
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.DeleteRoute(id);
@@ -114,7 +114,7 @@ public class RoutesControllerTest
         var request = new AssignReindeerToRouteRequest(reindeerId, 10);
         mockService.Setup(s => s.AssignReindeerToRouteAsync(routeId, reindeerId, 10))
                   .Returns(Task.CompletedTask);
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.AssignReindeerToRoute(routeId, request);
@@ -131,7 +131,7 @@ public class RoutesControllerTest
         var mockService = new Mock<IRoutesService>();
         var routeId = Guid.NewGuid();
         var request = new AssignReindeerToRouteRequest(Guid.Empty, 10);
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
         controller.ModelState.AddModelError("ReindeerId", "Invalid GUID");
 
         // Act
@@ -152,7 +152,7 @@ public class RoutesControllerTest
         var request = new AssignReindeerToRouteRequest(reindeerId, 10);
         mockService.Setup(s => s.AssignReindeerToRouteAsync(routeId, reindeerId, 10))
                   .ThrowsAsync(new KeyNotFoundException($"Route with ID {routeId} not found."));
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.AssignReindeerToRoute(routeId, request);
@@ -171,7 +171,7 @@ public class RoutesControllerTest
         var reindeerId = Guid.NewGuid();
         mockService.Setup(s => s.RemoveReindeerFromRouteAsync(routeId, reindeerId))
                   .Returns(Task.CompletedTask);
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.RemoveReindeerFromRoute(routeId, reindeerId);
@@ -190,7 +190,7 @@ public class RoutesControllerTest
         var reindeerId = Guid.NewGuid();
         mockService.Setup(s => s.RemoveReindeerFromRouteAsync(routeId, reindeerId))
                   .ThrowsAsync(new KeyNotFoundException($"Route or Reindeer not found."));
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.RemoveReindeerFromRoute(routeId, reindeerId);
@@ -212,7 +212,7 @@ public class RoutesControllerTest
             new ReindeerDto(Guid.NewGuid(), "Blitzen", "XMAS-002", 95.0, 45)
         };
         mockService.Setup(s => s.GetReindeersForRouteAsync(routeId)).ReturnsAsync(reindeers);
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.GetReindeersForRoute(routeId);
@@ -231,7 +231,7 @@ public class RoutesControllerTest
         var routeId = Guid.NewGuid();
         mockService.Setup(s => s.GetReindeersForRouteAsync(routeId))
                   .ThrowsAsync(new KeyNotFoundException($"Route with ID {routeId} not found."));
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.GetReindeersForRoute(routeId);
@@ -248,7 +248,7 @@ public class RoutesControllerTest
         var mockService = new Mock<IRoutesService>();
         var routeId = Guid.NewGuid();
         mockService.Setup(s => s.CanHandleNewDeliveryAsync(routeId)).ReturnsAsync(true);
-        var controller = new RoutesController(mockService.Object);
+        var controller = new RouteController(mockService.Object);
 
         // Act
         var result = await controller.CanHandleNewDelivery(routeId);
