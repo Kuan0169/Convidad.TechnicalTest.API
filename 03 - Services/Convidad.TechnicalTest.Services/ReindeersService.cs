@@ -9,6 +9,7 @@ public interface IReindeersService
     Task<IEnumerable<ReindeerDto>> GetAllReindeersAsync();
     Task<ReindeerDto> GetReindeerByIdAsync(Guid id);
     Task<ReindeerDto> AddReindeerAsync(ReindeerDto reindeerDto);
+    Task DeleteReindeerAsync(Guid id);
 }
 
 public class ReindeersService(SantaDbContext santaDb) : IReindeersService
@@ -44,5 +45,15 @@ public class ReindeersService(SantaDbContext santaDb) : IReindeersService
         await santaDb.SaveChangesAsync();
 
         return new ReindeerDto(reindeer.Id, reindeer.Name, reindeer.PlateNumber, reindeer.Weight, reindeer.Packets);
+    }
+
+    public async Task DeleteReindeerAsync(Guid id)
+    {
+        var reindeer = await santaDb.Reindeers.FindAsync(id);
+        if (reindeer == null)
+            throw new KeyNotFoundException($"Reindeer with ID {id} not found.");
+
+        santaDb.Reindeers.Remove(reindeer);
+        await santaDb.SaveChangesAsync();
     }
 }

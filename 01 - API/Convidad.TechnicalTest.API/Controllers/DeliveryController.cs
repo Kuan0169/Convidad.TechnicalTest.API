@@ -23,4 +23,35 @@ public class DeliveriesController(IDeliveriesService deliveriesService) : Contro
         var deliveries = await _deliveriesService.GetFailureDeliveriesAsync();
         return Ok(deliveries);
     }
+
+    [HttpPost]
+    public async Task<ActionResult<DeliveryDto>> AddDelivery([FromBody] CreateDeliveryDto deliveryDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            var createdDto = await _deliveriesService.AddDeliveryAsync(deliveryDto);
+            return CreatedAtAction(nameof(GetDeliveries), new { id = createdDto.Id }, createdDto);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteDelivery(Guid id)
+    {
+        try
+        {
+            await _deliveriesService.DeleteDeliveryAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 }

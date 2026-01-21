@@ -96,9 +96,38 @@ public class ReindeersServiceTest
         Assert.Equal(90.0, result.Weight);
         Assert.Equal(40, result.Packets);
 
-        // Verify it was saved to database
         var savedReindeer = await santaDb.Reindeers.FindAsync(result.Id);
         Assert.NotNull(savedReindeer);
         Assert.Equal("Comet", savedReindeer.Name);
+    }
+
+    [Fact]
+    public async Task DeleteReindeer_ValidId_RemovesFromDatabase()
+    {
+        // Arrange
+        var reindeer = new Reindeer { Name = "Rudolph", PlateNumber = "XMAS-001", Weight = 100.0, Packets = 50 };
+        santaDb.Reindeers.Add(reindeer);
+        await santaDb.SaveChangesAsync();
+
+        var service = new ReindeersService(santaDb);
+
+        // Act
+        await service.DeleteReindeerAsync(reindeer.Id);
+
+        // Assert
+        var deletedReindeer = await santaDb.Reindeers.FindAsync(reindeer.Id);
+        Assert.Null(deletedReindeer);
+    }
+
+    [Fact]
+    public async Task DeleteReindeer_InvalidId_ThrowsKeyNotFoundException()
+    {
+        // Arrange
+        var service = new ReindeersService(santaDb);
+        var invalidId = Guid.NewGuid();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            service.DeleteReindeerAsync(invalidId));
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Convidad.TechnicalTest.Data.Context;
 using Convidad.TechnicalTest.Data.Entities;
+using Convidad.TechnicalTest.Models.DTOs;
 using Convidad.TechnicalTest.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -88,5 +89,57 @@ public class ChildrenServiceTest
         // Assert
         Assert.NotNull(result);
         Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task AddChild_ValidChild_AddsToDatabase()
+    {
+        // Arrange
+        var service = new ChildrenService(santaDb);
+        var createChildDto = new CreateChildDto("Diana", "AU", false);
+
+        // Act
+        var result = await service.AddChildAsync(createChildDto);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("Diana", result.Name);
+        Assert.Equal("AU", result.CountryCode);
+        Assert.False(result.IsNice);
+
+        // Verify it was saved to database
+        var savedChild = await santaDb.Children.FindAsync(result.Id);
+        Assert.NotNull(savedChild);
+        Assert.Equal("Diana", savedChild.Name);
+    }
+
+    [Fact]
+    public async Task DeleteChild_ValidId_RemovesFromDatabase()
+    {
+        // Arrange
+        var child = new Child { Name = "Alice", CountryCode = "US", IsNice = true };
+        santaDb.Children.Add(child);
+        await santaDb.SaveChangesAsync();
+
+        var service = new ChildrenService(santaDb);
+
+        // Act
+        await service.DeleteChildAsync(child.Id);
+
+        // Assert
+        var deletedChild = await santaDb.Children.FindAsync(child.Id);
+        Assert.Null(deletedChild);
+    }
+
+    [Fact]
+    public async Task DeleteChild_InvalidId_ThrowsKeyNotFoundException()
+    {
+        // Arrange
+        var service = new ChildrenService(santaDb);
+        var invalidId = Guid.NewGuid();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            service.DeleteChildAsync(invalidId));
     }
 }

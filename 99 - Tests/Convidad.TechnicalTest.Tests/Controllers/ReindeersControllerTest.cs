@@ -103,4 +103,39 @@ public class ReindeersControllerTest
         Assert.IsType<BadRequestObjectResult>(result.Result);
         mockService.Verify(s => s.AddReindeerAsync(It.IsAny<ReindeerDto>()), Times.Never);
     }
+
+    [Fact]
+    public async Task DeleteReindeer_ValidId_ReturnsNoContent()
+    {
+        // Arrange
+        var mockService = new Mock<IReindeersService>();
+        var id = Guid.NewGuid();
+        mockService.Setup(s => s.DeleteReindeerAsync(id)).Returns(Task.CompletedTask);
+        var controller = new ReindeersController(mockService.Object);
+
+        // Act
+        var result = await controller.DeleteReindeer(id);
+
+        // Assert
+        Assert.IsType<NoContentResult>(result);
+        mockService.Verify(s => s.DeleteReindeerAsync(id), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteReindeer_InvalidId_ReturnsNotFound()
+    {
+        // Arrange
+        var mockService = new Mock<IReindeersService>();
+        var id = Guid.NewGuid();
+        mockService.Setup(s => s.DeleteReindeerAsync(id))
+                  .ThrowsAsync(new KeyNotFoundException($"Reindeer with ID {id} not found."));
+        var controller = new ReindeersController(mockService.Object);
+
+        // Act
+        var result = await controller.DeleteReindeer(id);
+
+        // Assert
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        Assert.Contains(id.ToString(), notFoundResult.Value?.ToString());
+    }
 }

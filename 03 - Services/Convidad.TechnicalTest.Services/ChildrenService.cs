@@ -9,6 +9,7 @@ public interface IChildrenService
     Task<IEnumerable<ChildDto>> GetAllChildrenAsync();
     Task<IEnumerable<ChildDto>> GetNaughtyChildrenAsync();
     Task<ChildDto> AddChildAsync(CreateChildDto childDto);
+    Task DeleteChildAsync(Guid id);
 }
 
 public class ChildrenService(SantaDbContext santaDb) : IChildrenService
@@ -42,5 +43,15 @@ public class ChildrenService(SantaDbContext santaDb) : IChildrenService
         await santaDb.SaveChangesAsync();
 
         return new ChildDto(child.Id, child.Name, child.CountryCode, child.IsNice);
+    }
+
+    public async Task DeleteChildAsync(Guid id)
+    {
+        var child = await santaDb.Children.FindAsync(id);
+        if (child == null)
+            throw new KeyNotFoundException($"Child with ID {id} not found.");
+
+        santaDb.Children.Remove(child);
+        await santaDb.SaveChangesAsync();
     }
 }
