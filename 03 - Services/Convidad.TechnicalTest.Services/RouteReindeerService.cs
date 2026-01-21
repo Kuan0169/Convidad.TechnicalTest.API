@@ -7,7 +7,6 @@ namespace Convidad.TechnicalTest.Services;
 
 public interface IRouteReindeerService
 {
-    Task<IEnumerable<RouteDto>> GetAllRoutesAsync();
     Task AssignReindeerToRouteAsync(Guid routeId, Guid reindeerId, int maxDeliveries = 10);
 
     Task RemoveReindeerFromRouteAsync(Guid routeId, Guid reindeerId);
@@ -20,12 +19,6 @@ public interface IRouteReindeerService
 public class RouteReindeerService(SantaDbContext dbContext) : IRouteReindeerService
 {
     private readonly SantaDbContext _dbContext = dbContext;
-
-    public async Task<IEnumerable<RouteDto>> GetAllRoutesAsync()
-    {
-        var routes = await _dbContext.Routes.ToListAsync();
-        return routes.Select(r => new RouteDto(r.Id, r.Name, r.Region, r.CapacityPerNight));
-    }
 
     public async Task AssignReindeerToRouteAsync(Guid routeId, Guid reindeerId, int maxDeliveries = 10)
     {
