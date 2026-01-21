@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
-
-namespace Convidad.TechnicalTest.API.Middlewares;
-
+﻿namespace Convidad.TechnicalTest.API.Middlewares;
 public class RequestTiming
 {
     private readonly RequestDelegate _next;

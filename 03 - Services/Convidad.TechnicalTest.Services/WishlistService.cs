@@ -1,5 +1,4 @@
 ﻿using Convidad.TechnicalTest.Data.Context;
-using Convidad.TechnicalTest.Data.Entities;
 using Convidad.TechnicalTest.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 

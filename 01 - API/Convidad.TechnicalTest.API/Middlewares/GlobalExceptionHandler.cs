@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Convidad.TechnicalTest.API.Middlewares;
+﻿namespace Convidad.TechnicalTest.API.Middlewares;
 
 public class GlobalExceptionHandler
 {
