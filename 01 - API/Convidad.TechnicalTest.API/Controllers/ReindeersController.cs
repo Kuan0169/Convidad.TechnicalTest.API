@@ -40,4 +40,18 @@ public class ReindeersController(IReindeersService reindeersService) : Controlle
         var createdDto = await _reindeersService.AddReindeerAsync(reindeerDto);
         return CreatedAtAction(nameof(GetReindeerById), new { id = createdDto.Id }, createdDto);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteReindeer(Guid id)
+    {
+        try
+        {
+            await _reindeersService.DeleteReindeerAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 }
