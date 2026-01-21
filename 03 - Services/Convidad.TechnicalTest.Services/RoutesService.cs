@@ -97,6 +97,10 @@ public class RoutesService(SantaDbContext santaDb) : IRoutesService
 
     public async Task<IEnumerable<ReindeerDto>> GetReindeersForRouteAsync(Guid routeId)
     {
+        var route = await santaDb.Routes.FindAsync(routeId);
+        if (route == null)
+            throw new KeyNotFoundException($"Route with ID {routeId} not found.");
+
         var reindeers = await santaDb.RouteReindeers
             .Where(rr => rr.RouteId == routeId)
             .Include(rr => rr.Reindeer)
