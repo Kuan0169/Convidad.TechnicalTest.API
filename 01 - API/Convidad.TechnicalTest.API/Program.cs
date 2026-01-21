@@ -1,9 +1,11 @@
 using Convidad.TechnicalTest.API.Extensions;
+using Convidad.TechnicalTest.API.Middlewares;
 using Convidad.TechnicalTest.Data.Context;
 using Convidad.TechnicalTest.Data.Context.Initializer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Convidad.TechnicalTest.API.Middlewares;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,13 +22,14 @@ builder.Services.AddDbContext<SantaDbContext>((sp, opt) =>
 
 builder.Services.AddServices();
 builder.Services.AddControllers();
+builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {
     options.ValueLengthLimit = 1024 * 1024;
 });
-
-builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -59,6 +62,8 @@ app.UseAuthorization();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.MapControllers();
