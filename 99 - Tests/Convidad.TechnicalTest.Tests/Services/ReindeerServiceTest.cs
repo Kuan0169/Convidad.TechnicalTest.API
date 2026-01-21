@@ -1,153 +1,104 @@
 ﻿using Convidad.TechnicalTest.Data.Context;
 using Convidad.TechnicalTest.Data.Entities;
-using Convidad.TechnicalTest.Services.SantaService;
+using Convidad.TechnicalTest.Models.DTOs;
+using Convidad.TechnicalTest.Services;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace Convidad.TechnicalTest.Tests.Services
+namespace Convidad.TechnicalTest.Tests.Services;
+
+public class ReindeersServiceTest
 {
-    public class ReindeerServiceTest
+    protected readonly SantaDbContext santaDb;
+
+    public ReindeersServiceTest()
     {
-        protected readonly SantaDbContext santaDb;
-        public ReindeerServiceTest()
+        var connection = new SqliteConnection("DataSource=:memory:");
+        connection.Open();
+        var options = new DbContextOptionsBuilder<SantaDbContext>()
+            .UseSqlite(connection)
+            .Options;
+        santaDb = new SantaDbContext(options);
+        santaDb.Database.EnsureCreated();
+    }
+
+    [Fact]
+    public async Task GetAllReindeers_ReturnsAllReindeers()
+    {
+        // Arrange
+        var reindeers = new List<Reindeer>
         {
-            var connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
-            var options = new DbContextOptionsBuilder<SantaDbContext>()
-                .UseSqlite(connection)
-                .Options;
-            santaDb = new SantaDbContext(options);
-            santaDb.Database.EnsureCreated();
-        }
+            new Reindeer { Name = "Rudolph", PlateNumber = "XMAS-001", Weight = 100.0, Packets = 50 },
+            new Reindeer { Name = "Blitzen", PlateNumber = "XMAS-002", Weight = 95.0, Packets = 45 }
+        };
+        santaDb.Reindeers.AddRange(reindeers);
+        await santaDb.SaveChangesAsync();
 
-        [Fact]
-        public void AddReindeer_AddsReindeerToDatabase()
-        {
-            // Arrange
-            var service = new SantaService(santaDb);
-            var reindeer = new Reindeer
-            {
-                Name = "Rudolph",
-                PlateNumber = "XMAS-001",
-                Weight = 120.5,
-                Packets = 50
-            };
+        var service = new ReindeersService(santaDb);
 
-            // Act
-            service.AddReindeer(reindeer);
-            var saved = santaDb.Reindeers.First(r => r.Name == "Rudolph");
+        // Act
+        var result = await service.GetAllReindeersAsync();
 
-            // Assert
-            Assert.NotNull(saved);
-            Assert.Equal("XMAS-001", saved.PlateNumber);
-            Assert.Equal(120.5, saved.Weight);
-        }
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count());
+    }
 
-        [Fact]
-        public void AssignReindeerToDelivery_AssignsCorrectReindeer()
-        {
-            // Arrange
-            var service = new SantaService(santaDb);
-            var child = new Child 
-            {
-                Name = "Test", 
-                CountryCode = "US" 
-            };
+    [Fact]
+    public async Task GetReindeerById_ValidId_ReturnsReindeer()
+    {
+        // Arrange
+        var reindeer = new Reindeer { Name = "Rudolph", PlateNumber = "XMAS-001", Weight = 100.0, Packets = 50 };
+        santaDb.Reindeers.Add(reindeer);
+        await santaDb.SaveChangesAsync();
 
-            var route = new Route 
-            { 
-                Name = "Test Route", 
-                Region = "North Pole" 
-            };
+        var service = new ReindeersService(santaDb);
 
-            var delivery = new Delivery 
-            { 
-                ChildId = child.Id, 
-                RouteId = route.Id 
-            };
+        // Act
+        var result = await service.GetReindeerByIdAsync(reindeer.Id);
 
-            var reindeer = new Reindeer 
-            { 
-                Name = "Blitzen", 
-                PlateNumber = "XMAS-002", 
-                Weight = 110, 
-                Packets = 40 
-            };
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(reindeer.Id, result.Id);
+        Assert.Equal("Rudolph", result.Name);
+        Assert.Equal("XMAS-001", result.PlateNumber);
+        Assert.Equal(100.0, result.Weight);
+        Assert.Equal(50, result.Packets);
+    }
 
-            santaDb.Children.Add(child);
-            santaDb.Routes.Add(route);
-            santaDb.Deliveries.Add(delivery);
-            santaDb.Reindeers.Add(reindeer);
-            santaDb.SaveChanges();
+    [Fact]
+    public async Task GetReindeerById_InvalidId_ThrowsKeyNotFoundException()
+    {
+        // Arrange
+        var service = new ReindeersService(santaDb);
+        var nonExistentId = Guid.NewGuid();
 
-            // Act
-            service.AssignReindeerToDelivery(delivery.Id, reindeer.Id);
-            var updatedDelivery = santaDb.Deliveries.First(d => d.Id == delivery.Id);
+        // Act & Assert
+        await Assert.ThrowsAsync<KeyNotFoundException>(() =>
+            service.GetReindeerByIdAsync(nonExistentId));
+    }
 
-            // Assert
-            Assert.Equal(reindeer.Id, updatedDelivery.ReindeerId);
-        }
+    [Fact]
+    public async Task AddReindeer_ValidReindeer_AddsToDatabase()
+    {
+        // Arrange
+        var service = new ReindeersService(santaDb);
+        var reindeerDto = new ReindeerDto(Guid.NewGuid(), "Comet", "XMAS-003", 90.0, 40);
 
-        [Fact]
-        public void AssignReindeerToDelivery_NonExistingDelivery_ThrowsKeyNotFoundException()
-        {
-            // Arrange
-            var service = new SantaService(santaDb);
-            var reindeer = new Reindeer
-            {
-                Name = "Comet",
-                PlateNumber = "XMAS-007",
-                Weight = 105,
-                Packets = 35
-            };
-            santaDb.Reindeers.Add(reindeer);
-            santaDb.SaveChanges();
+        // Act
+        var result = await service.AddReindeerAsync(reindeerDto);
 
-            var nonExistingDeliveryId = Guid.NewGuid();
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("Comet", result.Name);
+        Assert.Equal("XMAS-003", result.PlateNumber);
+        Assert.Equal(90.0, result.Weight);
+        Assert.Equal(40, result.Packets);
 
-            // Act & Assert
-            var exception = Assert.Throws<KeyNotFoundException>(() =>
-                service.AssignReindeerToDelivery(nonExistingDeliveryId, reindeer.Id));
-
-            Assert.Contains("Delivery", exception.Message);
-        }
-
-        [Fact]
-        public void AssignReindeerToDelivery_NonExistingReindeer_ThrowsKeyNotFoundException()
-        {
-            // Arrange
-            var service = new SantaService(santaDb);
-            var child = new Child { Name = "Test Child", CountryCode = "TC" };
-            var route = new Route { Name = "Test Route", Region = "Test Region" };
-            var delivery = new Delivery { ChildId = child.Id, RouteId = route.Id };
-
-            santaDb.Children.Add(child);
-            santaDb.Routes.Add(route);
-            santaDb.Deliveries.Add(delivery);
-            santaDb.SaveChanges();
-
-            var nonExistingReindeerId = Guid.NewGuid();
-
-            // Act & Assert
-            var exception = Assert.Throws<KeyNotFoundException>(() =>
-                service.AssignReindeerToDelivery(delivery.Id, nonExistingReindeerId));
-
-            Assert.Contains("Reindeer", exception.Message);
-        }
-
-        [Fact]
-        public void GetReindeerById_NonExistingId_ThrowsKeyNotFoundException()
-        {
-            // Arrange
-            var service = new SantaService(santaDb);
-            var nonExistingId = Guid.NewGuid();
-
-            // Act & Assert
-            var exception = Assert.Throws<KeyNotFoundException>(() =>
-                service.GetReindeerById(nonExistingId));
-
-            Assert.Contains("Reindeer", exception.Message);
-        }
+        // Verify it was saved to database
+        var savedReindeer = await santaDb.Reindeers.FindAsync(result.Id);
+        Assert.NotNull(savedReindeer);
+        Assert.Equal("Comet", savedReindeer.Name);
     }
 }

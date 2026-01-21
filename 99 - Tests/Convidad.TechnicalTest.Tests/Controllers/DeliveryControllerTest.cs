@@ -1,76 +1,55 @@
 ﻿using Convidad.TechnicalTest.API.Controllers;
-using Convidad.TechnicalTest.Data.DTOs.Requests;
-using Convidad.TechnicalTest.Services.SantaService;
+using Convidad.TechnicalTest.Models.DTOs;
+using Convidad.TechnicalTest.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-
 namespace Convidad.TechnicalTest.Tests.Controllers;
 
-public class DeliveryControllerTest
+public class DeliveriesControllerTest
 {
     [Fact]
-    public void AssignReindeerToDelivery_ValidRequest_ReturnsNoContent()
+    public async Task GetDeliveries_ReturnsAllDeliveries()
     {
         // Arrange
-        var mockService = new Mock<ISantaService>();
-        var controller = new DeliveryController(mockService.Object);
-        var deliveryId = Guid.NewGuid();
-        var reindeerId = Guid.NewGuid();
-        var request = new AssignReindeerRequest { ReindeerId = reindeerId };
+        var mockService = new Mock<IDeliveriesService>();
+        var deliveries = new List<DeliveryDto>
+        {
+            new DeliveryDto(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Pending", DateTimeOffset.UtcNow),
+            new DeliveryDto(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Delivered", DateTimeOffset.UtcNow)
+        };
+        mockService.Setup(s => s.GetDeliveriesAsync()).ReturnsAsync(deliveries);
+        var controller = new DeliveriesController(mockService.Object);
 
         // Act
-        var result = controller.AssignReindeerToDelivery(deliveryId, request);
+        var result = await controller.GetDeliveries();
 
         // Assert
-        Assert.IsType<NoContentResult>(result);
-        mockService.Verify(s => s.AssignReindeerToDelivery(deliveryId, reindeerId), Times.Once);
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var returnedDeliveries = Assert.IsAssignableFrom<IEnumerable<DeliveryDto>>(okResult.Value);
+        Assert.Equal(2, returnedDeliveries.Count());
     }
 
     [Fact]
-    public void AssignReindeerToDelivery_InvalidModel_ReturnsBadRequest()
+    public async Task GetFailureDeliveries_ReturnsOnlyFailedDeliveries()
     {
         // Arrange
-        var mockService = new Mock<ISantaService>();
-        var controller = new DeliveryController(mockService.Object);
-
-        controller.ModelState.AddModelError("ReindeerId", "Required");
-
-        var deliveryId = Guid.NewGuid();
-        var request = new AssignReindeerRequest { ReindeerId = Guid.Empty };
-
-        // Act
-        var result = controller.AssignReindeerToDelivery(deliveryId, request);
-
-        // Assert
-        Assert.IsType<BadRequestObjectResult>(result);
-        mockService.Verify(s => s.AssignReindeerToDelivery(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
-    }
-
-    [Fact]
-    public void GetReindeerById_NotFound_ReturnsNotFound()
-    {
-        // Arrange
-        var mockService = new Mock<ISantaService>();
-        var id = Guid.NewGuid();
-
-        mockService
-            .Setup(s => s.GetReindeerById(id))
-            .Throws(new KeyNotFoundException($"Reindeer with ID {id} not found."));
-
-        var controller = new DeliveryController(mockService.Object);
+        var mockService = new Mock<IDeliveriesService>();
+        var failedDeliveries = new List<DeliveryDto>
+        {
+            new DeliveryDto(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Failed", DateTimeOffset.UtcNow)
+        };
+        mockService.Setup(s => s.GetFailureDeliveriesAsync()).ReturnsAsync(failedDeliveries);
+        var controller = new DeliveriesController(mockService.Object);
 
         // Act
-        var result = controller.GetReindeerById(id);
+        var result = await controller.GetFailureDeliveries();
 
         // Assert
-        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
-        var actualMessage = notFoundResult.Value?.ToString();
-
-        Assert.NotNull(actualMessage);
-        Assert.Contains(id.ToString(), actualMessage);
-        Assert.Contains("Reindeer", actualMessage);
-        Assert.Contains("not found", actualMessage);
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var returnedDeliveries = Assert.IsAssignableFrom<IEnumerable<DeliveryDto>>(okResult.Value);
+        Assert.Single(returnedDeliveries);
+        Assert.Equal("Failed", returnedDeliveries.First().Status);
     }
 }
